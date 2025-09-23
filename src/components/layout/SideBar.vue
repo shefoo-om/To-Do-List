@@ -9,29 +9,29 @@ const mockTasks = ref([
     name: 'Complete Vue.js project',
     status: 'doing',
     date: '2025-01-15',
-    category: { name: 'Work', emoji: '💼' }
+    category: { name: 'Work', emoji: '💼' },
   },
   {
     id: 2,
     name: 'Buy groceries',
     status: 'todo',
     date: '2025-01-16',
-    category: { name: 'Personal', emoji: '🏠' }
+    category: { name: 'Personal', emoji: '🏠' },
   },
   {
     id: 3,
     name: 'Exercise routine',
     status: 'done',
     date: '2025-01-15',
-    category: { name: 'Health', emoji: '🏃' }
+    category: { name: 'Health', emoji: '🏃' },
   },
   {
     id: 4,
     name: 'Read documentation',
     status: 'todo',
-    date: '2025-01-17',
-    category: { name: 'Learning', emoji: '📚' }
-  }
+    date: '2025-10-17',
+    category: { name: 'Learning', emoji: '📚' },
+  },
 ])
 
 // Handle task selection from search
@@ -47,11 +47,7 @@ function handleTaskSelected(task) {
 
     <!-- Search Component -->
     <div class="sidebar__search-container">
-      <SearchComponent
-        :tasks="mockTasks"
-        @task-selected="handleTaskSelected"
-        placeholder="🔍 Search tasks..."
-      />
+      <SearchComponent :tasks="mockTasks" @task-selected="handleTaskSelected" />
     </div>
 
     <!-- Week List -->
@@ -73,9 +69,7 @@ function handleTaskSelected(task) {
 
     <!-- Navigation Links -->
     <nav class="sidebar__nav">
-      <RouterLink to="/" class="nav-link text-secondary">
-        📅 Current Week
-      </RouterLink>
+      <RouterLink to="/" class="nav-link text-secondary"> 📅 Current Week </RouterLink>
       <a href="#" class="nav-link text-secondary">⚙️ Settings</a>
       <a href="#" class="nav-link text-secondary">📊 Statistics</a>
     </nav>
@@ -144,13 +138,13 @@ function handleTaskSelected(task) {
 .sidebar__nav {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  padding: 0px 14px;
+  gap: 8px;
 }
 
 .nav-link {
   display: block;
   text-decoration: none;
-  padding: 0.75rem 1rem;
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.2s;

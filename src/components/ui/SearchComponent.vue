@@ -6,12 +6,12 @@ import gsap from 'gsap'
 const props = defineProps({
   tasks: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   placeholder: {
     type: String,
-    default: '🔍 Search tasks...'
-  }
+    default: 'Search tasks...',
+  },
 })
 
 // Emits
@@ -24,10 +24,11 @@ const query = ref('')
 const searchResults = computed(() => {
   if (!query.value.trim()) return []
 
-  return props.tasks.filter(task =>
-    task.name.toLowerCase().includes(query.value.toLowerCase()) ||
-    task.category?.name.toLowerCase().includes(query.value.toLowerCase()) ||
-    task.status.toLowerCase().includes(query.value.toLowerCase())
+  return props.tasks.filter(
+    (task) =>
+      task.name.toLowerCase().includes(query.value.toLowerCase()) ||
+      task.category?.name.toLowerCase().includes(query.value.toLowerCase()) ||
+      task.status.toLowerCase().includes(query.value.toLowerCase()),
   )
 })
 
@@ -41,9 +42,9 @@ function onEnter(el, done) {
   gsap.to(el, {
     opacity: 1,
     transform: 'translateY(0)',
-    duration: 0.3,
-    delay: el.dataset.index * 0.05,
-    onComplete: done
+    duration: 0.4,
+    delay: el.dataset.index * 0.4,
+    onComplete: done,
   })
 }
 
@@ -52,8 +53,8 @@ function onLeave(el, done) {
     opacity: 0,
     transform: 'translateY(-10px)',
     duration: 0.2,
-    delay: el.dataset.index * 0.03,
-    onComplete: done
+    delay: el.dataset.index * 0.25,
+    onComplete: done,
   })
 }
 
@@ -73,7 +74,7 @@ function getStatusClass(status) {
   const statusClasses = {
     todo: 'status-todo',
     doing: 'status-doing',
-    done: 'status-done'
+    done: 'status-done',
   }
   return statusClasses[status.toLowerCase()] || 'status-todo'
 }
@@ -81,7 +82,6 @@ function getStatusClass(status) {
 
 <template>
   <div class="search-component">
-    <!-- Search Input -->
     <div class="search-input-container">
       <input
         v-model="query"
@@ -89,20 +89,11 @@ function getStatusClass(status) {
         :placeholder="placeholder"
         class="search-input bg-card text-primary"
       />
-      <button
-        v-if="query"
-        @click="clearSearch"
-        class="clear-button text-secondary"
-      >
-        ✕
-      </button>
+      <button v-if="query" @click="clearSearch" class="clear-button text-secondary">✕</button>
     </div>
 
-    <!-- Results Container - Always Visible -->
     <div class="results-container">
-      <!-- Default State - No search -->
       <div v-if="!query.trim()" class="default-state text-secondary">
-        <div class="default-icon">🔍</div>
         <div>Search for tasks...</div>
         <div class="default-hint">Try searching by name, category, or status</div>
       </div>
@@ -144,10 +135,10 @@ function getStatusClass(status) {
         </TransitionGroup>
       </div>
 
-      <!-- No Results -->
       <div v-else class="no-results text-secondary">
-        <div class="no-results-icon">🔍</div>
-        <div>No tasks found for "{{ query }}"</div>
+        <div>
+          No tasks found for <span class="no-results-word">"{{ query }}"</span>
+        </div>
         <div class="no-results-hint">Try different keywords</div>
       </div>
     </div>
@@ -160,7 +151,7 @@ function formatDate(dateString) {
   const date = new Date(dateString)
   return date.toLocaleDateString('en-US', {
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   })
 }
 </script>
@@ -168,7 +159,7 @@ function formatDate(dateString) {
 <style scoped>
 .search-component {
   position: relative;
-  height: 250px;
+  height: 270px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -186,15 +177,14 @@ function formatDate(dateString) {
   padding: 0.75rem;
   padding-right: 2.5rem;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 10px;
+  font-size: 16px;
   transition: all 0.2s;
 }
 
 .search-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .clear-button {
@@ -202,15 +192,14 @@ function formatDate(dateString) {
   right: 8px;
   background: none;
   border: none;
-  cursor: pointer;
   padding: 4px;
-  border-radius: 4px;
-  font-size: 12px;
+  font-size: 14px;
   transition: all 0.2s;
 }
 
 .clear-button:hover {
-  background-color: var(--bg-hover);
+  cursor: pointer;
+  color: var(--primary-hover);
 }
 
 .results-container {
@@ -218,9 +207,8 @@ function formatDate(dateString) {
   min-height: 0;
   margin-top: 8px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: var(--bg-card);
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -236,12 +224,6 @@ function formatDate(dateString) {
   text-align: center;
 }
 
-.default-icon {
-  font-size: 24px;
-  margin-bottom: 8px;
-  opacity: 0.5;
-}
-
 .default-hint {
   font-size: 12px;
   margin-top: 4px;
@@ -255,10 +237,10 @@ function formatDate(dateString) {
 }
 
 .results-header {
-  padding: 8px 12px;
+  padding: 6px 12px;
   font-size: 12px;
-  font-weight: 500;
-  border-bottom: 1px solid var(--color-border);
+  font-weight: 700;
+  border-bottom: 0.1px solid var(--color-border);
   flex-shrink: 0;
 }
 
@@ -268,18 +250,24 @@ function formatDate(dateString) {
   margin: 0;
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 .result-item {
   display: flex;
   align-items: center;
+  gap: 5px;
   justify-content: space-between;
-  padding: 12px;
+  padding: 8px;
   cursor: pointer;
   transition: all 0.2s;
   border-bottom: 1px solid var(--color-border);
 }
 
+.result-item:first-child {
+  padding-top: 14px;
+}
 .result-item:last-child {
   border-bottom: none;
 }
@@ -289,12 +277,15 @@ function formatDate(dateString) {
 }
 
 .task-info {
-  flex: 1;
+  width: 70%;
 }
 
 .task-name {
   font-weight: 500;
   margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-meta {
@@ -309,8 +300,8 @@ function formatDate(dateString) {
 
 .task-status {
   padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 11px;
+  border-radius: 10px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -325,10 +316,8 @@ function formatDate(dateString) {
   text-align: center;
 }
 
-.no-results-icon {
-  font-size: 24px;
-  margin-bottom: 8px;
-  opacity: 0.5;
+.no-results-word {
+  font-weight: 500;
 }
 
 .no-results-hint {
@@ -339,19 +328,24 @@ function formatDate(dateString) {
 
 /* Scrollbar styling */
 .results-list::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
+  transition: all 0.3s ease;
 }
 
 .results-list::-webkit-scrollbar-track {
   background: var(--bg-main);
+  transition: background 0.3s ease;
 }
 
 .results-list::-webkit-scrollbar-thumb {
   background: var(--color-border);
-  border-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  transition: all 0.3s ease;
 }
 
 .results-list::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
+  transform: scaleX(1.1);
 }
 </style>
