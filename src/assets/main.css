@@ -1,0 +1,155 @@
+@import './base.css';
+
+/* Override body styles for todo app */
+body {
+  font-size: 16px;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Update app container for todo layout */
+#app {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/* Remove the original flex layout */
+@media (min-width: 1024px) {
+  body {
+    display: block;
+    place-items: unset;
+  }
+
+  #app {
+    display: block;
+    grid-template-columns: unset;
+    padding: 0;
+  }
+}
+
+/* ============================================
+   THEME VARIABLES
+   ============================================ */
+
+:root {
+  /* Background Colors */
+  --bg-main: #FFFFFF;
+  --bg-sidebar: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-hover: #F1F5F9;
+
+  /* Text Colors */
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+
+  /* Brand Colors */
+  --primary-color: #3B82F6;
+  --primary-hover: #2563EB;
+
+  /* Status Colors */
+  --status-todo: #EF4444;
+  --status-doing: #F59E0B;
+  --status-done: #10B981;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --bg-main: #1F2937;
+  --bg-sidebar: #111827;
+  --bg-card: #374151;
+  --bg-hover: #4B5563;
+
+  --text-primary: #F9FAFB;
+  --text-secondary: #D1D5DB;
+  --text-muted: #9CA3AF;
+}
+
+/* Blue Theme */
+[data-theme="blue"] {
+  --primary-color: #2563EB;
+  --bg-main: #EFF6FF;
+  --bg-sidebar: #DBEAFE;
+}
+
+/* Green Theme */
+[data-theme="green"] {
+  --primary-color: #059669;
+  --bg-main: #ECFDF5;
+  --bg-sidebar: #D1FAE5;
+}
+
+/* Purple Theme */
+[data-theme="purple"] {
+  --primary-color: #7C3AED;
+  --bg-main: #F3E8FF;
+  --bg-sidebar: #E9D5FF;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Background Classes */
+.bg-main { background-color: var(--bg-main); }
+.bg-sidebar { background-color: var(--bg-sidebar); }
+.bg-card { background-color: var(--bg-card); }
+.bg-hover:hover { background-color: var(--bg-hover); }
+.bg-primary { background-color: var(--primary-color); }
+
+/* Text Classes */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-white { color: #FFFFFF; }
+
+/* Border Classes */
+.border-light { border-color: var(--color-border); }
+
+/* Status Classes */
+.status-todo {
+  background-color: var(--status-todo);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-doing {
+  background-color: var(--status-doing);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-done {
+  background-color: var(--status-done);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Update link styles */
+a,
+.green {
+  text-decoration: none;
+  color: var(--primary-color);
+  transition: 0.2s;
+  padding: 0;
+}
+
+a:hover {
+  background-color: transparent;
+  color: var(--primary-hover);
+}
