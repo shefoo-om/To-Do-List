@@ -141,7 +141,7 @@ function handleTaskSelected(task) {
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   transition:
     transform 0.3s ease,
     opacity 0.3s ease;
@@ -173,8 +173,8 @@ function handleTaskSelected(task) {
 
 .sidebar-toggle {
   position: fixed;
-  top: 10px;
-  left: 10px;
+  top: 4px;
+  left: 4px;
   z-index: 1001;
   background: var(--bg-card);
   border: 1px solid var(--color-border);

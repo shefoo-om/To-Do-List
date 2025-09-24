@@ -1,6 +1,6 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import Sidebar from './components/layout/SideBar.vue';
+import Sidebar from './components/layout/SideBar.vue'
 </script>
 
 <template>
@@ -21,7 +21,12 @@ import Sidebar from './components/layout/SideBar.vue';
 
 .main-content {
   flex: 1;
-  padding: 2rem;
+  padding: 32px;
   overflow-y: auto;
+}
+@media (max-width: 768px) {
+  .main-content {
+    padding: 32px 16px 20px;
+  }
 }
 </style>
