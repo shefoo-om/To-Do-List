@@ -1,11 +1,15 @@
 @import './base.css';
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Lato:wght@100;300;400;700;900&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 /* Override body styles for todo app */
 body {
   font-size: 16px;
   background: var(--bg-main);
   color: var(--text-primary);
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+  font-family: 'Lato', sans-serif;
 }
 
 /* Update app container for todo layout */
@@ -39,57 +43,57 @@ body {
 
 :root {
   /* Background Colors */
-  --bg-main: #FFFFFF;
-  --bg-sidebar: #F8FAFC;
-  --bg-card: #FFFFFF;
-  --bg-hover: #F1F5F9;
+  --bg-main: #ffffff;
+  --bg-sidebar: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
 
   /* Text Colors */
-  --text-primary: #1F2937;
-  --text-secondary: #6B7280;
-  --text-muted: #9CA3AF;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
 
   /* Brand Colors */
-  --primary-color: #3B82F6;
-  --primary-hover: #2563EB;
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
 
   /* Status Colors */
-  --status-todo: #EF4444;
-  --status-doing: #F59E0B;
-  --status-done: #10B981;
+  --status-todo: #ef4444;
+  --status-doing: #f59e0b;
+  --status-done: #10b981;
 }
 
 /* Dark Theme */
-[data-theme="dark"] {
-  --bg-main: #1F2937;
+[data-theme='dark'] {
+  --bg-main: #1f2937;
   --bg-sidebar: #111827;
   --bg-card: #374151;
-  --bg-hover: #4B5563;
+  --bg-hover: #4b5563;
 
-  --text-primary: #F9FAFB;
-  --text-secondary: #D1D5DB;
-  --text-muted: #9CA3AF;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
 }
 
 /* Blue Theme */
-[data-theme="blue"] {
-  --primary-color: #2563EB;
-  --bg-main: #EFF6FF;
-  --bg-sidebar: #DBEAFE;
+[data-theme='blue'] {
+  --primary-color: #2563eb;
+  --bg-main: #eff6ff;
+  --bg-sidebar: #dbeafe;
 }
 
 /* Green Theme */
-[data-theme="green"] {
+[data-theme='green'] {
   --primary-color: #059669;
-  --bg-main: #ECFDF5;
-  --bg-sidebar: #D1FAE5;
+  --bg-main: #ecfdf5;
+  --bg-sidebar: #d1fae5;
 }
 
 /* Purple Theme */
-[data-theme="purple"] {
-  --primary-color: #7C3AED;
-  --bg-main: #F3E8FF;
-  --bg-sidebar: #E9D5FF;
+[data-theme='purple'] {
+  --primary-color: #7c3aed;
+  --bg-main: #f3e8ff;
+  --bg-sidebar: #e9d5ff;
 }
 
 /* ============================================
@@ -97,20 +101,40 @@ body {
    ============================================ */
 
 /* Background Classes */
-.bg-main { background-color: var(--bg-main); }
-.bg-sidebar { background-color: var(--bg-sidebar); }
-.bg-card { background-color: var(--bg-card); }
-.bg-hover:hover { background-color: var(--bg-hover); }
-.bg-primary { background-color: var(--primary-color); }
+.bg-main {
+  background-color: var(--bg-main);
+}
+.bg-sidebar {
+  background-color: var(--bg-sidebar);
+}
+.bg-card {
+  background-color: var(--bg-card);
+}
+.bg-hover:hover {
+  background-color: var(--bg-hover);
+}
+.bg-primary {
+  background-color: var(--primary-color);
+}
 
 /* Text Classes */
-.text-primary { color: var(--text-primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-muted { color: var(--text-muted); }
-.text-white { color: #FFFFFF; }
+.text-primary {
+  color: var(--text-primary);
+}
+.text-secondary {
+  color: var(--text-secondary);
+}
+.text-muted {
+  color: var(--text-muted);
+}
+.text-white {
+  color: #ffffff;
+}
 
 /* Border Classes */
-.border-light { border-color: var(--color-border); }
+.border-light {
+  border-color: var(--color-border);
+}
 
 /* Status Classes */
 .status-todo {
