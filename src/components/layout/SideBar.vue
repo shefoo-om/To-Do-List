@@ -1,9 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import SearchComponent from '../ui/SearchComponent.vue'
 
-// Mock tasks data (replace with real data later)
-const mockTasks = ref([
+const mockTasks = reactive([
   {
     id: 1,
     name: 'Complete Vue.js project',
@@ -34,24 +33,77 @@ const mockTasks = ref([
   },
 ])
 
-// Handle task selection from search
+const showSideBar = ref(true)
+const isMobile = ref(false)
+
+function checkScreenSize() {
+  if (window.innerWidth < 767) {
+    isMobile.value = true
+    showSideBar.value = false // hide sidebar on mobile by default
+  } else {
+    isMobile.value = false
+    showSideBar.value = true // always show sidebar on desktop
+  }
+}
+
+function toggleSidebar() {
+  showSideBar.value = !showSideBar.value
+}
+
+function handleClickOutside(event) {
+  if (isMobile.value && showSideBar.value) {
+    const sidebar = document.querySelector('.sidebar')
+    const toggleButton = document.querySelector('.sidebar-toggle')
+
+    if (
+      sidebar &&
+      !sidebar.contains(event.target) &&
+      toggleButton &&
+      !toggleButton.contains(event.target)
+    ) {
+      showSideBar.value = false
+    }
+  }
+}
+onMounted(() => {
+  checkScreenSize()
+  window.addEventListener('resize', checkScreenSize)
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkScreenSize)
+  document.removeEventListener('click', handleClickOutside)
+})
+
 function handleTaskSelected(task) {
   console.log('Selected task:', task)
 }
 </script>
 
 <template>
-  <aside class="sidebar bg-sidebar">
-    <!-- App Title -->
+  <button
+    class="sidebar-toggle"
+    :class="{ 'sidebar-toggle--mobile': isMobile }"
+    @click="toggleSidebar"
+  >
+    {{ showSideBar ? '✕' : '☰' }}
+  </button>
+
+  <aside
+    class="sidebar bg-sidebar"
+    :class="{
+      'sidebar--hidden': !showSideBar,
+      'sidebar--mobile': isMobile,
+    }"
+  >
     <h1 class="sidebar__title text-primary">📅 To-Do List</h1>
 
-    <!-- Search Component -->
     <div class="sidebar__search-container">
       <SearchComponent :tasks="mockTasks" @task-selected="handleTaskSelected" />
     </div>
 
-    <!-- Week List -->
-    <div class="week-list">
+    <!-- <div class="week-list">
       <h3 class="text-primary">📋 Weeks</h3>
       <div class="week-item bg-card text-primary">
         <span>Jan 15-21</span>
@@ -67,29 +119,98 @@ function handleTaskSelected(task) {
       </div>
     </div>
 
-    <!-- Navigation Links -->
     <nav class="sidebar__nav">
       <RouterLink to="/" class="nav-link text-secondary"> 📅 Current Week </RouterLink>
       <a href="#" class="nav-link text-secondary">⚙️ Settings</a>
       <a href="#" class="nav-link text-secondary">📊 Statistics</a>
-    </nav>
+    </nav> -->
 
-    <!-- Footer -->
     <footer class="sidebar__footer">
       <small class="text-secondary">© 2025 My To-Do App</small>
     </footer>
   </aside>
+
+  <div v-if="isMobile && showSideBar" class="sidebar-overlay" @click="showSideBar = false"></div>
 </template>
 
 <style scoped>
 .sidebar {
   width: 300px;
-  padding: 1.5rem;
+  padding: 24px;
   height: 100vh;
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 24px;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+  position: relative;
+  z-index: 100;
+}
+.sidebar--hidden {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.sidebar--mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+.sidebar-toggle {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1001;
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 19px;
+  transition: all 0.2s;
+}
+
+.sidebar-toggle:hover {
+  background: var(--bg-hover);
+}
+
+.sidebar-toggle--mobile {
+  position: fixed;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+@media (max-width: 767px) {
+  .sidebar:not(.sidebar--hidden) {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .sidebar-toggle {
+    display: none;
+  }
+
+  .sidebar--hidden {
+    transform: translateX(-100%);
+  }
 }
 
 .sidebar__title {
@@ -102,14 +223,14 @@ function handleTaskSelected(task) {
   position: relative;
 }
 
-.week-list {
+/* .week-list {
   flex: 1;
   min-height: 0;
 }
 
 .week-list h3 {
-  font-size: 1rem;
-  margin-bottom: 0.75rem;
+  font-size: 16px;
+  margin-bottom: 12px;
   font-weight: 600;
 }
 
@@ -117,9 +238,9 @@ function handleTaskSelected(task) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem;
+  padding: 12px;
   border-radius: 8px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
   border: 1px solid var(--color-border);
   cursor: pointer;
   transition: all 0.2s;
@@ -131,7 +252,7 @@ function handleTaskSelected(task) {
 }
 
 .task-count {
-  font-size: 0.85rem;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -148,7 +269,7 @@ function handleTaskSelected(task) {
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.2s;
-}
+} */
 
 .nav-link:hover {
   background-color: var(--bg-card);
@@ -157,7 +278,7 @@ function handleTaskSelected(task) {
 }
 
 .sidebar__footer {
-  padding-top: 1rem;
+  padding-top: 16px;
   border-top: 1px solid var(--color-border);
   text-align: center;
 }

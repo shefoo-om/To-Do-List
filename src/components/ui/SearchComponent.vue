@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue'
 import gsap from 'gsap'
 
-// Props
 const props = defineProps({
   tasks: {
     type: Array,
@@ -14,13 +13,10 @@ const props = defineProps({
   },
 })
 
-// Emits
 const emit = defineEmits(['task-selected'])
 
-// Search query
 const query = ref('')
 
-// Computed filtered results
 const searchResults = computed(() => {
   if (!query.value.trim()) return []
 
@@ -32,7 +28,6 @@ const searchResults = computed(() => {
   )
 })
 
-// Animation functions
 function onBeforeEnter(el) {
   el.style.opacity = 0
   el.style.transform = 'translateY(-10px)'
