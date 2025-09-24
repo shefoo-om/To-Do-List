@@ -39,10 +39,10 @@ const isMobile = ref(false)
 function checkScreenSize() {
   if (window.innerWidth < 767) {
     isMobile.value = true
-    showSideBar.value = false // hide sidebar on mobile by default
+    showSideBar.value = false
   } else {
     isMobile.value = false
-    showSideBar.value = true // always show sidebar on desktop
+    showSideBar.value = true
   }
 }
 
@@ -83,7 +83,7 @@ function handleTaskSelected(task) {
 
 <template>
   <button
-    class="sidebar-toggle"
+    class="sidebar-toggle text-secondary"
     :class="{ 'sidebar-toggle--mobile': isMobile }"
     @click="toggleSidebar"
   >
@@ -97,7 +97,7 @@ function handleTaskSelected(task) {
       'sidebar--mobile': isMobile,
     }"
   >
-    <h1 class="sidebar__title text-primary">📅 To-Do List</h1>
+    <h1 class="sidebar__title text-primary">To-Do List</h1>
 
     <div class="sidebar__search-container">
       <SearchComponent :tasks="mockTasks" @task-selected="handleTaskSelected" />
@@ -148,38 +148,50 @@ function handleTaskSelected(task) {
   position: relative;
   z-index: 100;
 }
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 265px;
+    padding: 40px 16px 6px;
+    height: 100vh; /* could make it max height*/
+    gap: 12px;
+  }
+}
+
 .sidebar--hidden {
   transform: translateX(-100%);
   opacity: 0;
   pointer-events: none;
 }
+
 .sidebar--mobile {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
+
 .sidebar-toggle {
   position: fixed;
-  top: 16px;
-  left: 16px;
+  top: 10px;
+  left: 10px;
   z-index: 1001;
   background: var(--bg-card);
   border: 1px solid var(--color-border);
-  border-radius: 4px;
-  width: 40px;
-  height: 40px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 19px;
+  font-size: 14px;
   transition: all 0.2s;
 }
 
 .sidebar-toggle:hover {
   background: var(--bg-hover);
+  color: var(--primary-hover);
 }
 
 .sidebar-toggle--mobile {
@@ -192,7 +204,7 @@ function handleTaskSelected(task) {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.65);
   z-index: 999;
 }
 
@@ -217,6 +229,11 @@ function handleTaskSelected(task) {
   font-size: 24px;
   font-weight: bold;
   margin: 0;
+}
+@media (max-width: 768px) {
+  .sidebar__title {
+    margin-bottom: 5px;
+  }
 }
 
 .sidebar__search-container {
@@ -271,11 +288,11 @@ function handleTaskSelected(task) {
   transition: all 0.2s;
 } */
 
-.nav-link:hover {
+/* .nav-link:hover {
   background-color: var(--bg-card);
   color: var(--text-primary);
   transform: translateX(4px);
-}
+} */
 
 .sidebar__footer {
   padding-top: 16px;

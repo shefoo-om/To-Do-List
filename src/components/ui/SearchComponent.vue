@@ -158,6 +158,7 @@ function formatDate(dateString) {
   width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 5px;
 }
 
 .search-input-container {
@@ -169,8 +170,8 @@ function formatDate(dateString) {
 
 .search-input {
   width: 100%;
-  padding: 0.75rem;
-  padding-right: 2.5rem;
+  padding: 12px;
+  padding-right: 40px;
   border: 1px solid var(--color-border);
   border-radius: 10px;
   font-size: 16px;
@@ -235,7 +236,7 @@ function formatDate(dateString) {
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 700;
-  border-bottom: 0.1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 
