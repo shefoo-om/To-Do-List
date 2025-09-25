@@ -1,37 +1,9 @@
 <script setup>
-import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import SearchComponent from '../ui/SearchComponent.vue'
+import { useTodoStore } from '@/stores/todoStore.js'
 
-const mockTasks = reactive([
-  {
-    id: 1,
-    name: 'Complete Vue.js project',
-    status: 'doing',
-    date: '2025-01-15',
-    category: { name: 'Work', emoji: '💼' },
-  },
-  {
-    id: 2,
-    name: 'Buy groceries',
-    status: 'todo',
-    date: '2025-01-16',
-    category: { name: 'Personal', emoji: '🏠' },
-  },
-  {
-    id: 3,
-    name: 'Exercise routine',
-    status: 'done',
-    date: '2025-01-15',
-    category: { name: 'Health', emoji: '🏃' },
-  },
-  {
-    id: 4,
-    name: 'Read documentation',
-    status: 'todo',
-    date: '2025-10-17',
-    category: { name: 'Learning', emoji: '📚' },
-  },
-])
+const todoStore = useTodoStore()
 
 const showSideBar = ref(true)
 const isMobile = ref(false)
@@ -65,10 +37,13 @@ function handleClickOutside(event) {
     }
   }
 }
+
 onMounted(() => {
   checkScreenSize()
   window.addEventListener('resize', checkScreenSize)
   document.addEventListener('click', handleClickOutside)
+
+  todoStore.initializeMockData()
 })
 
 onUnmounted(() => {
@@ -77,7 +52,7 @@ onUnmounted(() => {
 })
 
 function handleTaskSelected(task) {
-  console.log('Selected task:', task)
+  console.log('Selected task from store:', task)
 }
 </script>
 
@@ -100,22 +75,17 @@ function handleTaskSelected(task) {
     <h1 class="sidebar__title text-primary">To-Do List</h1>
 
     <div class="sidebar__search-container">
-      <SearchComponent :tasks="mockTasks" @task-selected="handleTaskSelected" />
+      <SearchComponent
+        :tasks="todoStore.tasks"
+        @task-selected="handleTaskSelected"
+      />
     </div>
 
     <!-- <div class="week-list">
-      <h3 class="text-primary">📋 Weeks</h3>
-      <div class="week-item bg-card text-primary">
-        <span>Jan 15-21</span>
-        <span class="task-count text-secondary">12 tasks</span>
-      </div>
-      <div class="week-item bg-card text-primary">
-        <span>Jan 22-28</span>
-        <span class="task-count text-secondary">8 tasks</span>
-      </div>
-      <div class="week-item bg-card text-primary">
-        <span>Jan 29 - Feb 4</span>
-        <span class="task-count text-secondary">5 tasks</span>
+      <h3 class="text-primary">📋 Current Week</h3>
+      <div v-if="todoStore.getCurrentWeek" class="week-item bg-card text-primary">
+        <span>{{ todoStore.getCurrentWeek.dateRange }}</span>
+        <span class="task-count text-secondary">{{ todoStore.getWeekTaskCount }} tasks</span>
       </div>
     </div>
 
@@ -153,7 +123,7 @@ function handleTaskSelected(task) {
   .sidebar {
     width: 265px;
     padding: 40px 16px 6px;
-    height: 100vh; /* could make it max height*/
+    height: 100vh;
     gap: 12px;
   }
 }
@@ -230,6 +200,7 @@ function handleTaskSelected(task) {
   font-weight: bold;
   margin: 0;
 }
+
 @media (max-width: 768px) {
   .sidebar__title {
     margin-bottom: 5px;
@@ -240,7 +211,7 @@ function handleTaskSelected(task) {
   position: relative;
 }
 
-/* .week-list {
+.week-list {
   flex: 1;
   min-height: 0;
 }
@@ -286,13 +257,14 @@ function handleTaskSelected(task) {
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.2s;
-} */
+  padding: 8px 12px;
+}
 
-/* .nav-link:hover {
+.nav-link:hover {
   background-color: var(--bg-card);
   color: var(--text-primary);
   transform: translateX(4px);
-} */
+}
 
 .sidebar__footer {
   padding-top: 16px;

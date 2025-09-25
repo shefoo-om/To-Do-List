@@ -23,7 +23,7 @@ const searchResults = computed(() => {
   return props.tasks.filter(
     (task) =>
       task.name.toLowerCase().includes(query.value.toLowerCase()) ||
-      task.category?.name.toLowerCase().includes(query.value.toLowerCase()) ||
+      task.category?.toLowerCase().includes(query.value.toLowerCase()) ||
       task.status.toLowerCase().includes(query.value.toLowerCase()),
   )
 })
@@ -38,7 +38,7 @@ function onEnter(el, done) {
     opacity: 1,
     transform: 'translateY(0)',
     duration: 0.4,
-    delay: el.dataset.index * 0.4,
+    delay: el.dataset.index * 0.1,
     onComplete: done,
   })
 }
@@ -48,23 +48,20 @@ function onLeave(el, done) {
     opacity: 0,
     transform: 'translateY(-10px)',
     duration: 0.2,
-    delay: el.dataset.index * 0.25,
+    delay: el.dataset.index * 0.05,
     onComplete: done,
   })
 }
 
-// Handle task selection
 function selectTask(task) {
   emit('task-selected', task)
-  query.value = '' // Clear search after selection
+  query.value = ''
 }
 
-// Clear search
 function clearSearch() {
   query.value = ''
 }
 
-// Get status color class
 function getStatusClass(status) {
   const statusClasses = {
     todo: 'status-todo',
@@ -72,6 +69,30 @@ function getStatusClass(status) {
     done: 'status-done',
   }
   return statusClasses[status.toLowerCase()] || 'status-todo'
+}
+
+function getCategoryEmoji(category) {
+  const categoryEmojis = {
+    work: '💼',
+    personal: '🏠',
+    health: '🏃',
+    learning: '📚',
+    design: '🎨',
+    research: '🔍',
+    planning: '📋',
+    admin: '📊',
+  }
+  return categoryEmojis[category.toLowerCase()] || '📝'
+}
+
+function formatDate(dateString) {
+  if (!dateString) return 'No date'
+
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  })
 }
 </script>
 
@@ -117,10 +138,10 @@ function getStatusClass(status) {
             <div class="task-info">
               <div class="task-name">{{ task.name }}</div>
               <div class="task-meta text-secondary">
-                <span v-if="task.category" class="category">
-                  {{ task.category.emoji }} {{ task.category.name }}
+                <span class="category">
+                  {{ getCategoryEmoji(task.category) }} {{ task.category }}
                 </span>
-                <span class="date">{{ formatDate(task.date) }}</span>
+                <span class="date-info" v-if="task.date">{{ formatDate(task.date) }}</span>
               </div>
             </div>
             <span :class="['task-status', getStatusClass(task.status)]">
@@ -139,17 +160,6 @@ function getStatusClass(status) {
     </div>
   </div>
 </template>
-
-<script>
-// Helper function to format date
-function formatDate(dateString) {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })
-}
-</script>
 
 <style scoped>
 .search-component {
@@ -190,11 +200,11 @@ function formatDate(dateString) {
   border: none;
   padding: 4px;
   font-size: 14px;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
 .clear-button:hover {
-  cursor: pointer;
   color: var(--primary-hover);
 }
 
@@ -264,6 +274,7 @@ function formatDate(dateString) {
 .result-item:first-child {
   padding-top: 14px;
 }
+
 .result-item:last-child {
   border-bottom: none;
 }
@@ -291,15 +302,35 @@ function formatDate(dateString) {
 }
 
 .category {
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.date-info {
+  font-weight: 600;
 }
 
 .task-status {
   padding: 4px 8px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-todo {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.status-doing {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.status-done {
+  background-color: #d1fae5;
+  color: #059669;
 }
 
 .no-results {

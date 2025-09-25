@@ -1,24 +1,63 @@
-<script setup></script>
+<script setup>
+import { onMounted } from 'vue'
+import { useTodoStore } from '@/stores/todoStore.js'
+
+const todoStore = useTodoStore()
+
+const {
+  getCurrentWeek: currentWeek,
+  getCurrentWeekDays: currentWeekDays,
+  getWeekTaskCount: weekTaskCount,
+} = todoStore
+
+const getTaskCounts = (dayId) => {
+  return todoStore.getTaskCountsForDay(dayId)
+}
+
+const handleDayClick = (day) => {
+  console.log('Day clicked:', day)
+}
+
+onMounted(() => {
+  todoStore.initializeMockData()
+})
+</script>
 
 <template>
   <div class="week-view">
     <div class="week-header">
       <h2 class="week-title text-primary">
-        Week Of <span class="text-secondary week-date"> January 15 - 21, 2024 </span>
+        Week Of
+        <span class="text-secondary week-date">{{ currentWeek?.dateRange || 'Loading...' }}</span>
       </h2>
+      <p class="week-name text-secondary">{{ currentWeek?.name? `"${currentWeek.name}"` : '' }}</p>
+      <p class="week-stats text-primary">{{ weekTaskCount }} total tasks this week</p>
     </div>
     <div class="days-tasks">
-      <div class="day-card">
+      <div
+        v-for="day in currentWeekDays"
+        :key="day.id"
+        class="day-card"
+        @click="handleDayClick(day)"
+      >
         <div class="main-day">
-          <h2 class="day-head">MON</h2>
-          <p class="day-date text-secondary">Jan 15</p>
+          <h2 class="day-head">{{ day.name }}</h2>
+          <p class="day-date text-secondary">{{ day.date }}</p>
         </div>
         <div class="day-type-of-tasks">
-          <h3 class="day-to-do-tasks">To-Do: <span class="number-of-tasks">10 tasks</span></h3>
-          <h3 class="day-donig-tasks">Donig: <span class="number-of-tasks">8 tasks</span></h3>
-          <h3 class="day-done-tasks">Done: <span class="number-of-tasks">1 tasks</span></h3>
+          <h3 class="day-to-do-tasks">
+            To-Do: <span class="number-of-tasks">{{ getTaskCounts(day.id).todo }} tasks</span>
+          </h3>
+          <h3 class="day-doing-tasks">
+            Doing: <span class="number-of-tasks">{{ getTaskCounts(day.id).doing }} tasks</span>
+          </h3>
+          <h3 class="day-done-tasks">
+            Done: <span class="number-of-tasks">{{ getTaskCounts(day.id).done }} tasks</span>
+          </h3>
         </div>
-        <h2 class="total-tasks">Total:<span class="number-of-tasks">19 tasks</span></h2>
+        <h2 class="total-tasks">
+          Total: <span class="number-of-tasks">{{ getTaskCounts(day.id).total }} tasks</span>
+        </h2>
       </div>
     </div>
   </div>
@@ -33,7 +72,7 @@
   justify-content: space-between;
   gap: 24px;
 }
-/*  */
+
 .week-header {
   width: 100%;
   height: max-content;
@@ -41,20 +80,37 @@
   padding: 16px;
   border-radius: 24px;
 }
+
 .week-title {
   text-align: center;
   font-weight: 600;
+  margin-bottom: 8px;
 }
+
 .week-date {
   font-weight: 500;
   margin-left: 2px;
 }
+
+.week-name {
+  text-align: center;
+  font-style: italic;
+  margin: 8px 0;
+  font-size: 18px;
+}
+
+.week-stats {
+  text-align: center;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
 @media (max-width: 768px) {
   .week-header {
     width: 100%;
   }
 }
-/*  */
+
 .days-tasks {
   width: 100%;
   height: 100%;
@@ -63,6 +119,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
+
 @media (max-width: 1280px) {
   .days-tasks {
     grid-template-columns: repeat(3, 1fr);
@@ -74,6 +131,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 @media (max-width: 900px) {
   .days-tasks {
     grid-template-columns: repeat(2, 1fr);
@@ -85,11 +143,13 @@
     grid-template-columns: repeat(1, 1fr);
   }
 }
+
 @media (max-width: 767px) {
   .days-tasks {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 @media (max-width: 480px) {
   .days-tasks {
     grid-template-columns: repeat(1, 1fr);
@@ -109,9 +169,11 @@
   cursor: pointer;
   transition: all 200ms;
 }
+
 .day-card:hover {
   background: var(--bg-hover);
 }
+
 @media (max-width: 767px) {
   .day-card {
     padding: 10px 16px;
@@ -125,13 +187,16 @@
   justify-content: space-between;
   align-items: center;
 }
+
 .day-head {
   font-weight: 500;
 }
+
 .day-date {
   font-weight: 400;
   font-size: 18px;
 }
+
 .day-type-of-tasks {
   height: 70%;
   display: flex;
@@ -140,18 +205,21 @@
 }
 
 .day-to-do-tasks,
-.day-donig-tasks,
+.day-doing-tasks,
 .day-done-tasks,
 .total-tasks {
   font-weight: 500;
   margin-left: 5px;
 }
+
 .total-tasks {
   text-align: center;
 }
+
 .total-tasks span {
   font-weight: 600;
 }
+
 .number-of-tasks {
   color: var(--primary-color);
   margin-left: 6px;
