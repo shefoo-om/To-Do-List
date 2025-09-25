@@ -30,7 +30,7 @@ onMounted(() => {
         Week Of
         <span class="text-secondary week-date">{{ currentWeek?.dateRange || 'Loading...' }}</span>
       </h2>
-      <p class="week-name text-secondary">{{ currentWeek?.name? `"${currentWeek.name}"` : '' }}</p>
+      <p class="week-name text-secondary">{{ currentWeek?.name ? `"${currentWeek.name}"` : '' }}</p>
       <p class="week-stats text-primary">{{ weekTaskCount }} total tasks this week</p>
     </div>
     <div class="days-tasks">
@@ -69,7 +69,7 @@ onMounted(() => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 24px;
 }
 
@@ -113,34 +113,39 @@ onMounted(() => {
 
 .days-tasks {
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   display: grid;
   justify-content: flex-start;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 32px;
 }
 
 @media (max-width: 1280px) {
   .days-tasks {
     grid-template-columns: repeat(3, 1fr);
+          gap: 22px;
+
   }
 }
 
 @media (max-width: 1024px) {
   .days-tasks {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 }
 
 @media (max-width: 900px) {
   .days-tasks {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
 }
 
 @media (max-width: 862px) {
   .days-tasks {
     grid-template-columns: repeat(1, 1fr);
+    gap: 16px;
   }
 }
 

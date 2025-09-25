@@ -314,7 +314,7 @@ function formatDate(dateString) {
   border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: capitalize;
   white-space: nowrap;
 }
 
