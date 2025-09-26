@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
-// import AddTaskCard from '@/components/day/AddTaskCard.vue'
+import AddTaskCard from '@/components/day/AddTaskCard.vue'
 // import TodoColumn from '@/components/day/TodoColumn.vue'
 // import DoingColumn from '@/components/day/DoingColumn.vue'
 // import DoneColumn from '@/components/day/DoneColumn.vue'
@@ -35,13 +35,13 @@ const taskCounts = computed(() => {
   }
 })
 
-// const handleAddTask = (taskData) => {
-//   todoStore.addTask({
-//     ...taskData,
-//     dayId: dayId.value,
-//     status: 'todo', // New tasks start as todo
-//   })
-// }
+const handleAddTask = (taskData) => {
+  todoStore.addTask({
+    ...taskData,
+    dayId: dayId.value,
+    status: 'todo', // New tasks start as todo
+  })
+}
 
 // const handleTaskStatusChange = (taskId, newStatus) => {
 //   todoStore.updateTask(taskId, { status: newStatus })
@@ -89,6 +89,7 @@ const taskCounts = computed(() => {
       </div>
     </div>
 
+    <AddTaskCard @add-task="handleAddTask"/>
     <!-- <div class="add-task-section">
       <AddTaskCard @add-task="handleAddTask" />
     </div>
@@ -226,3 +227,5 @@ const taskCounts = computed(() => {
   }
 }
 </style>
+
+
