@@ -1,17 +1,17 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useToast } from 'vue-toastification'
 
 const emit = defineEmits(['add-task'])
+const toast = useToast()
 
 const categories = [
   { value: 'work', label: 'Work', emoji: '💼' },
-  { value: 'personal', label: 'Personal', emoji: '🏠' },
-  { value: 'health', label: 'Health', emoji: '🏃' },
-  { value: 'learning', label: 'Learning', emoji: '📚' },
-  { value: 'design', label: 'Design', emoji: '🎨' },
-  { value: 'research', label: 'Research', emoji: '🔍' },
-  { value: 'planning', label: 'Planning', emoji: '📋' },
-  { value: 'admin', label: 'Admin', emoji: '📊' },
+  { value: 'personal', label: 'Personal', emoji: '😊' },
+  { value: 'health', label: 'Health & Fitness', emoji: '💪' },
+  { value: 'learning', label: 'Learning', emoji: '🧠' },
+  { value: 'social', label: 'Social & Family', emoji: '👨‍👩‍👧‍👦' },
+  { value: 'finance', label: 'Finance', emoji: '💳' },
 ]
 
 const selected = ref(null)
@@ -20,7 +20,6 @@ const isOpen = ref(false)
 const searchTerm = ref('')
 const selectRef = ref(null)
 
-// Filtered options based on search
 const filteredCategories = computed(() => {
   if (!searchTerm.value) return categories
   return categories.filter((category) =>
@@ -59,15 +58,27 @@ const handleKeydown = (event) => {
 }
 
 const handleSubmit = () => {
-  if (!taskName.value.trim() || !selected.value) return
+  if (!taskName.value.trim() || !selected.value) {
+    toast.error('Please fill in all fields')
+    return
+  }
 
-  console.log('Task:', taskName.value)
-  console.log('Category:', selected.value)
-
-  // Emit or handle the form submission
   emit('add-task', { name: taskName.value.trim(), category: selected.value })
-
-  // Reset form
+  const truncatedName = taskName.value.trim().split(' ').slice(0, 3).join(' ')
+  toast.success(`Task "${truncatedName}"... added successfully!`, {
+    position: 'top-right',
+    timeout: 2500,
+    closeOnClick: true,
+    pauseOnFocusLoss: true,
+    pauseOnHover: false,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: true,
+    hideProgressBar: false,
+    closeButton: 'button',
+    icon: true,
+    rtl: false,
+  })
   taskName.value = ''
   selected.value = null
 }
@@ -86,6 +97,7 @@ onUnmounted(() => {
 <template>
   <div class="add-task-card">
     <h3 class="add-task-header">Add Task</h3>
+
     <form class="add-task-form" @submit.prevent="handleSubmit">
       <input v-model="taskName" placeholder="Enter your Task..." class="add-task-input" required />
 
@@ -107,7 +119,6 @@ onUnmounted(() => {
         </div>
 
         <div v-if="isOpen" class="dropdown-menu">
-
           <div class="options-list">
             <div
               v-for="category in filteredCategories"
@@ -143,6 +154,7 @@ onUnmounted(() => {
   border-radius: 18px;
   background: var(--bg-card, #fff);
   border: 1px solid var(--color-border, #e5e7eb);
+  position: relative;
 }
 
 .add-task-header {
@@ -267,12 +279,6 @@ onUnmounted(() => {
   }
 }
 
-.search-wrapper {
-  padding: 8px;
-  border-bottom: 1px solid var(--color-border, #e5e7eb);
-}
-
-
 .options-list {
   max-height: 200px;
   overflow-y: auto;
@@ -370,7 +376,6 @@ onUnmounted(() => {
   background: var(--bg-scroll-thumb, #cbd5e1);
   border-radius: 3px;
 }
-
 .options-list::-webkit-scrollbar-thumb:hover {
   background: var(--bg-scroll-thumb-hover, #94a3b8);
 }
