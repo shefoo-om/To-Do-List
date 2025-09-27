@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
 import AddTaskCard from '@/components/day/AddTaskCard.vue'
+import TodoColumn from '@/components/day/TodoColumn.vue'
 // import TodoColumn from '@/components/day/TodoColumn.vue'
 // import DoingColumn from '@/components/day/DoingColumn.vue'
 // import DoneColumn from '@/components/day/DoneColumn.vue'
@@ -39,7 +40,7 @@ const handleAddTask = (taskData) => {
   todoStore.addTask({
     ...taskData,
     dayId: dayId.value,
-    status: 'todo', // New tasks start as todo
+    status: 'todo',
   })
 }
 
@@ -89,12 +90,15 @@ const handleAddTask = (taskData) => {
       </div>
     </div>
 
-    <AddTaskCard @add-task="handleAddTask"/>
-    <!-- <div class="add-task-section">
-      <AddTaskCard @add-task="handleAddTask" />
+    <AddTaskCard @add-task="handleAddTask" />
+
+    <div class="day-tasks-Column">
+      <TodoColumn />
+      <TodoColumn />
+      <TodoColumn />
     </div>
 
-    <div class="task-columns">
+    <!-- <div class="task-columns">
       <TodoColumn
         :tasks="dayTasks.todo"
         :task-count="taskCounts.todo"
@@ -118,7 +122,7 @@ const handleAddTask = (taskData) => {
         @delete-task="handleDeleteTask"
         @edit-task="handleEditTask"
       />
-    </div> -->
+    </div>  -->
   </div>
 </template>
 
@@ -218,14 +222,30 @@ const handleAddTask = (taskData) => {
     gap: 0px;
   }
   .day-fulldate {
-  font-size: 16px;
-  margin-left: 0px;
-}
+    font-size: 16px;
+    margin-left: 0px;
+  }
   .day-status {
     width: 100%;
     justify-content: center;
   }
 }
+
+.day-tasks-Column {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1160px) {
+  .day-tasks-Column {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+@media (max-width: 768px) {
+  .day-tasks-Column {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 16px;
+  }
+}
 </style>
-
-
