@@ -351,6 +351,22 @@ onUnmounted(() => {
   box-shadow: none;
 }
 
+@media (max-width: 1111px) {
+  .add-task-form {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .add-task-input {
+    width: 100%;
+  }
+  .custom-select {
+    width: 65%;
+  }
+  .add-task-button {
+    width: 30%;
+  }
+}
 @media (max-width: 768px) {
   .add-task-form {
     flex-direction: column;
