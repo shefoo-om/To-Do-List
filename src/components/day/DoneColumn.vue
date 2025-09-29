@@ -15,7 +15,7 @@ const props = defineProps({
 
 const emit = defineEmits(['status-change', 'delete-task', 'edit-task'])
 
-const nextStatus = 'doing'
+const nextStatus = null
 
 const handleStatusChange = (taskId, newStatus) => {
   emit('status-change', taskId, newStatus)
@@ -33,23 +33,24 @@ const isEmpty = computed(() => props.tasks.length === 0)
 </script>
 
 <template>
-  <div class="task-column todo-column">
+  <div class="task-column">
     <div class="column-header text-primary">
-      <h3 class="column-title">To-Do</h3>
+      <h3 class="column-title">Done</h3>
       <span class="task-counter">{{ taskCount }}</span>
     </div>
 
     <div class="tasks-list" :class="{ empty: isEmpty }">
       <div v-if="isEmpty" class="empty-state">
-        <p class="empty-text text-primary">No tasks to do</p>
-        <p class="empty-hint text-secondary">Add a new task to get started!</p>
+        <div class="empty-icon">🎉</div>
+        <p class="empty-text">No completed tasks</p>
+        <p class="empty-hint">Complete tasks to see them here!</p>
       </div>
       <TransitionGroup v-else tag="div" name="task" class="tasks-container">
         <TaskCard
           v-for="task in tasks"
           :task="task"
           :key="task.id"
-          :status="'todo'"
+          :status="'done'"
           :next-status="nextStatus"
           @status-change="handleStatusChange"
           @delete-task="handleDeleteTask"
@@ -71,7 +72,7 @@ const isEmpty = computed(() => props.tasks.length === 0)
   overflow: hidden;
 }
 .column-header {
-  color: var(--status-todo);
+  color: var(--status-done);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -109,6 +110,11 @@ const isEmpty = computed(() => props.tasks.length === 0)
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+.empty-icon {
+  font-size: 40px;
+}
+.task-counter {
 }
 
 .task-enter-active {

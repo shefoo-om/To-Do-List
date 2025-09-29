@@ -320,17 +320,17 @@ function formatDate(dateString) {
 
 .status-todo {
   background-color: #fef3c7;
-  color: #d97706;
+  color: var(--status-todo);
 }
 
 .status-doing {
   background-color: #dbeafe;
-  color: #2563eb;
+  color: var(--status-doing);
 }
 
 .status-done {
   background-color: #d1fae5;
-  color: #059669;
+  color: var(--status-done);
 }
 
 .no-results {

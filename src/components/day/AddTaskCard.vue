@@ -65,7 +65,7 @@ const handleSubmit = () => {
 
   emit('add-task', { name: taskName.value.trim(), category: selected.value })
   const truncatedName = taskName.value.trim().split(' ').slice(0, 3).join(' ')
-  toast.success(`Task "${truncatedName}"... added successfully!`, {
+  toast.success(`"${truncatedName}" added successfully!`, {
     position: 'top-right',
     timeout: 2500,
     closeOnClick: true,
@@ -327,11 +327,11 @@ onUnmounted(() => {
 
 .add-task-button {
   width: 12%;
-  border: 1px solid var(--primary-color, #3b82f6);
+  border: 0px;
   border-radius: 10px;
   font-size: 15px;
   padding: 10px;
-  background: var(--primary-color, #3b82f6);
+  background: var(--primary-hover, #2563eb);
   color: white;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -339,9 +339,7 @@ onUnmounted(() => {
 }
 
 .add-task-button:hover:not(:disabled) {
-  background: var(--primary-hover, #2563eb);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  background: var(--primary-color, #3b82f6);
 }
 
 .add-task-button:disabled {

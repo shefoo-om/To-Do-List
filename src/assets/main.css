@@ -58,9 +58,9 @@ body {
   --primary-hover: #2563eb;
 
   /* Status Colors */
-  --status-todo: #ef4444;
-  --status-doing: #f59e0b;
-  --status-done: #10b981;
+  --status-todo: #f59e0b;
+  --status-doing: #2563eb;
+  --status-done: #059669;
 }
 
 /* Dark Theme */

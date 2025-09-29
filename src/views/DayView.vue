@@ -4,8 +4,8 @@ import { useRoute } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
 import AddTaskCard from '@/components/day/AddTaskCard.vue'
 import TodoColumn from '@/components/day/TodoColumn.vue'
-// import DoingColumn from '@/components/day/DoingColumn.vue'
-// import DoneColumn from '@/components/day/DoneColumn.vue'
+import DoingColumn from '@/components/day/DoingColumn.vue'
+import DoneColumn from '@/components/day/DoneColumn.vue'
 
 const route = useRoute()
 const todoStore = useTodoStore()
@@ -99,12 +99,6 @@ const handleEditTask = (taskId, updates) => {
         @delete-task="handleDeleteTask"
         @edit-task="handleEditTask"
       />
-      <TodoColumn />
-      <TodoColumn />
-    </div>
-
-    <!-- <div class="task-columns">
-
       <DoingColumn
         :tasks="dayTasks.doing"
         :task-count="taskCounts.doing"
@@ -112,15 +106,15 @@ const handleEditTask = (taskId, updates) => {
         @delete-task="handleDeleteTask"
         @edit-task="handleEditTask"
       />
-
       <DoneColumn
         :tasks="dayTasks.done"
         :task-count="taskCounts.done"
+        F
         @status-change="handleTaskStatusChange"
         @delete-task="handleDeleteTask"
         @edit-task="handleEditTask"
       />
-    </div>  -->
+    </div>
   </div>
 </template>
 
