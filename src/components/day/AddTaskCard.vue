@@ -63,7 +63,11 @@ const handleSubmit = () => {
     return
   }
 
-  emit('add-task', { name: taskName.value.trim(), category: selected.value })
+  emit('add-task', {
+    name: taskName.value.trim(),
+    category: selected.value.value,
+  })
+
   const truncatedName = taskName.value.trim().split(' ').slice(0, 3).join(' ')
   toast.success(`"${truncatedName}" added successfully!`, {
     position: 'top-right',

@@ -114,9 +114,6 @@ const isEmpty = computed(() => props.tasks.length === 0)
 .empty-icon {
   font-size: 40px;
 }
-.task-counter {
-}
-
 .task-enter-active {
   transition: all 0.3s ease-out;
 }
