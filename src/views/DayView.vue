@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
 import AddTaskCard from '@/components/day/AddTaskCard.vue'
 import TodoColumn from '@/components/day/TodoColumn.vue'
-// import TodoColumn from '@/components/day/TodoColumn.vue'
 // import DoingColumn from '@/components/day/DoingColumn.vue'
 // import DoneColumn from '@/components/day/DoneColumn.vue'
 
@@ -44,17 +43,17 @@ const handleAddTask = (taskData) => {
   })
 }
 
-// const handleTaskStatusChange = (taskId, newStatus) => {
-//   todoStore.updateTask(taskId, { status: newStatus })
-// }
+const handleTaskStatusChange = (taskId, newStatus) => {
+  todoStore.updateTask(taskId, { status: newStatus })
+}
 
-// const handleDeleteTask = (taskId) => {
-//   todoStore.deleteTask(taskId)
-// }
+const handleDeleteTask = (taskId) => {
+  todoStore.deleteTask(taskId)
+}
 
-// const handleEditTask = (taskId, updates) => {
-//   todoStore.updateTask(taskId, updates)
-// }
+const handleEditTask = (taskId, updates) => {
+  todoStore.updateTask(taskId, updates)
+}
 </script>
 
 <template>
@@ -93,12 +92,6 @@ const handleAddTask = (taskData) => {
     <AddTaskCard @add-task="handleAddTask" />
 
     <div class="day-tasks-Column">
-      <TodoColumn />
-      <TodoColumn />
-      <TodoColumn />
-    </div>
-
-    <!-- <div class="task-columns">
       <TodoColumn
         :tasks="dayTasks.todo"
         :task-count="taskCounts.todo"
@@ -106,6 +99,11 @@ const handleAddTask = (taskData) => {
         @delete-task="handleDeleteTask"
         @edit-task="handleEditTask"
       />
+      <TodoColumn />
+      <TodoColumn />
+    </div>
+
+    <!-- <div class="task-columns">
 
       <DoingColumn
         :tasks="dayTasks.doing"
@@ -233,19 +231,18 @@ const handleAddTask = (taskData) => {
 
 .day-tasks-Column {
   display: grid;
+  gap: 16px;
   grid-template-columns: repeat(3, 1fr);
 }
 
 @media (max-width: 1160px) {
   .day-tasks-Column {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
   }
 }
 @media (max-width: 768px) {
   .day-tasks-Column {
     grid-template-columns: repeat(1, 1fr);
-    gap: 16px;
   }
 }
 </style>
