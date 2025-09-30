@@ -1,6 +1,5 @@
-
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import gsap from 'gsap'
 import { useRouter } from 'vue-router'
 import { X, Briefcase, Sparkles, Dumbbell, Rocket, Heart, DollarSign } from 'lucide-vue-next'
@@ -18,8 +17,8 @@ const props = defineProps({
   },
 })
 
-
 const query = ref('')
+const isClearing = ref(false)
 
 const searchResults = computed(() => {
   if (!query.value.trim()) return []
@@ -32,9 +31,7 @@ const searchResults = computed(() => {
   )
 })
 
-// Fixed: Navigate to the day that contains this task
 const handleTaskClick = (task) => {
-  // Navigate to the day view where this task belongs
   router.push(`/day/${task.dayId}`)
 }
 
@@ -63,9 +60,39 @@ function onLeave(el, done) {
   })
 }
 
+async function clearSearch() {
+  if (!query.value.trim() || isClearing.value) return
 
-function clearSearch() {
+  isClearing.value = true
+
+  const resultsContainer = document.querySelector('.results-container')
+  if (resultsContainer) {
+    await gsap.to(resultsContainer, {
+      opacity: 0,
+      scale: 0.95,
+      duration: 0.3,
+      ease: 'power2.out',
+    })
+  }
+
   query.value = ''
+
+  await nextTick()
+
+  if (resultsContainer) {
+    await gsap.fromTo(
+      resultsContainer,
+      { opacity: 0, scale: 0.95 },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.3,
+        ease: 'power2.out',
+      },
+    )
+  }
+
+  isClearing.value = false
 }
 
 function getStatusClass(status) {
@@ -110,7 +137,12 @@ function formatDate(dateString) {
         :placeholder="placeholder"
         class="search-input bg-card text-primary"
       />
-      <button v-if="query" @click="clearSearch" class="clear-button text-secondary">
+      <button
+        v-if="query && !isClearing"
+        @click="clearSearch"
+        class="clear-button text-secondary"
+        :disabled="isClearing"
+      >
         <X :size="16" />
       </button>
     </div>
@@ -215,9 +247,13 @@ function formatDate(dateString) {
   border-radius: 4px;
 }
 
-.clear-button:hover {
+.clear-button:hover:not(:disabled) {
   color: var(--primary-hover);
-  /* background: var(--bg-hover); */
+}
+
+.clear-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .results-container {
@@ -230,6 +266,7 @@ function formatDate(dateString) {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transform-origin: top;
 }
 
 .default-state {
