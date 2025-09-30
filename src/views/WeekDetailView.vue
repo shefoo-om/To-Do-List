@@ -1,42 +1,85 @@
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
+import { ArrowBigLeftDash, ArrowBigRightDash } from 'lucide-vue-next'
 
+const route = useRoute()
+const router = useRouter()
 const todoStore = useTodoStore()
 
-const {
-  getCurrentWeek: currentWeek,
-  getCurrentWeekDays: currentWeekDays,
-  getWeekTaskCount: weekTaskCount,
-} = todoStore
+const weekId = computed(() => parseInt(route.params.weekId) || 1)
+
+const currentWeek = computed(() => {
+  return todoStore.getWeekById(weekId.value)
+})
+
+const weekDays = computed(() => {
+  return todoStore.getWeekDays(weekId.value)
+})
+
+const weekTaskCount = computed(() => {
+  return todoStore.getTaskCountForWeek(weekId.value)
+})
+
+const canGoPrevious = computed(() => {
+  return currentWeek.value && currentWeek.value.weekNumber > 1
+})
 
 const getTaskCounts = (dayId) => {
   return todoStore.getTaskCountsForDay(dayId)
 }
 
+const handlePreviousWeek = () => {
+  if (!canGoPrevious.value) return
+
+  const prevWeek = todoStore.goToPreviousWeek()
+  router.push(`/week/${prevWeek.id}`)
+}
+
+const handleNextWeek = () => {
+  const nextWeek = todoStore.goToNextWeek()
+  router.push(`/week/${nextWeek.id}`)
+}
+
 onMounted(() => {
   todoStore.initializeStore()
+  todoStore.setCurrentWeekById(weekId.value)
 })
 </script>
 
 <template>
   <div class="week-view">
     <div class="week-header">
-      <h2 class="week-title text-primary">
-        Week Of
-        <span class="text-secondary week-date">{{ currentWeek?.dateRange || 'Loading...' }}</span>
-      </h2>
-      <p class="week-name text-secondary">{{ currentWeek?.name ? `"${currentWeek.name}"` : '' }}</p>
+      <div class="week-navigation">
+        <button
+          @click="handlePreviousWeek"
+          class="nav-button text-secondary"
+          :class="{ 'nav-button--disabled': !canGoPrevious }"
+          :disabled="!canGoPrevious"
+          title="Previous Week"
+        >
+          <ArrowBigLeftDash size="18" />
+        </button>
+
+        <div class="week-info">
+          <h2 class="week-title text-primary">
+            {{ currentWeek?.name || 'Loading...' }}
+          </h2>
+          <p class="week-date text-secondary">{{ currentWeek?.dateRange || '' }}</p>
+        </div>
+
+        <button @click="handleNextWeek" class="nav-button text-secondary" title="Next Week">
+          <ArrowBigRightDash size="18" />
+        </button>
+      </div>
+
       <p class="week-stats text-primary">{{ weekTaskCount }} total tasks this week</p>
     </div>
+
     <div class="days-tasks">
-      <RouterLink
-        v-for="day in currentWeekDays"
-        :key="day.id"
-        :to="`/day/${day.id}`"
-        class="day-card"
-      >
+      <RouterLink v-for="day in weekDays" :key="day.id" :to="`/day/${day.id}`" class="day-card">
         <div class="main-day">
           <h2 class="day-head">{{ day.name }}</h2>
           <p class="day-date text-secondary">{{ day.date }}</p>
@@ -78,22 +121,53 @@ onMounted(() => {
   border-radius: 24px;
 }
 
-.week-title {
+.week-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.nav-button {
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-button:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.nav-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.nav-button--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.week-info {
+  flex: 1;
   text-align: center;
+}
+
+.week-title {
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  font-size: 24px;
 }
 
 .week-date {
   font-weight: 500;
-  margin-left: 2px;
-}
-
-.week-name {
-  text-align: center;
-  font-style: italic;
-  margin: 8px 0;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .week-stats {
@@ -106,11 +180,19 @@ onMounted(() => {
   .week-header {
     width: 100%;
   }
+
+  .week-navigation {
+    gap: 12px;
+  }
+
+  .nav-button {
+    width: 10%;
+  }
+
 }
 
 .days-tasks {
   width: 100%;
-  /* height: 100%; */
   display: grid;
   justify-content: flex-start;
   grid-template-columns: repeat(4, 1fr);

@@ -5,106 +5,177 @@ export const useTodoStore = defineStore('todoStore', () => {
   const weeks = ref([])
   const days = ref([])
   const tasks = ref([])
+  const currentWeekIndex = ref(0)
 
-  const initializeMockData = () => {
-    const mockTasks = [
-      { id: 1, name: 'Review project requirements', status: 'todo', category: 'work', dayId: 1, date: '2024-01-15', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-15T09:00:00Z' }] },
-      { id: 2, name: 'Update documentation', status: 'todo', category: 'work', dayId: 1, date: '2024-01-15', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-15T09:15:00Z' }] },
-      { id: 3, name: 'Team meeting preparation', status: 'doing', category: 'work', dayId: 1, date: '2024-01-15', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-15T09:30:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-15T10:00:00Z' }] },
-      { id: 4, name: 'Code review', status: 'doing', category: 'work', dayId: 1, date: '2024-01-15', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-15T09:45:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-15T11:00:00Z' }] },
-      { id: 5, name: 'Fix bug #123', status: 'done', category: 'work', dayId: 1, date: '2024-01-15', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-15T08:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-15T08:30:00Z' }, { action: 'status_changed', status: 'done', timestamp: '2024-01-15T12:00:00Z' }] },
+  const getStartOfWeek = (date) => {
+    const d = new Date(date)
+    const day = d.getDay()
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+    return new Date(d.setDate(diff))
+  }
 
-      { id: 6, name: 'Design mockups', status: 'todo', category: 'design', dayId: 2, date: '2024-01-16', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-16T09:00:00Z' }] },
-      { id: 7, name: 'Client presentation', status: 'todo', category: 'work', dayId: 2, date: '2024-01-16', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-16T09:30:00Z' }] },
-      { id: 8, name: 'Database optimization', status: 'doing', category: 'work', dayId: 2, date: '2024-01-16', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-16T10:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-16T11:00:00Z' }] },
-      { id: 9, name: 'Write unit tests', status: 'done', category: 'work', dayId: 2, date: '2024-01-16', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-16T08:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-16T09:00:00Z' }, { action: 'status_changed', status: 'done', timestamp: '2024-01-16T14:00:00Z' }] },
-      { id: 10, name: 'Deploy to staging', status: 'done', category: 'work', dayId: 2, date: '2024-01-16', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-16T13:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-16T13:30:00Z' }, { action: 'status_changed', status: 'done', timestamp: '2024-01-16T15:00:00Z' }] },
+  const formatDate = (date) => {
+    const months = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December']
+    const d = new Date(date)
+    return `${months[d.getMonth()]} ${d.getDate()}`
+  }
 
-      { id: 11, name: 'Market research', status: 'todo', category: 'research', dayId: 3, date: '2024-01-17', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-17T09:00:00Z' }] },
-      { id: 12, name: 'User interviews', status: 'doing', category: 'research', dayId: 3, date: '2024-01-17', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-17T10:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-17T11:00:00Z' }] },
-      { id: 13, name: 'Feature planning', status: 'done', category: 'planning', dayId: 3, date: '2024-01-17', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-17T08:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-17T09:00:00Z' }, { action: 'status_changed', status: 'done', timestamp: '2024-01-17T12:00:00Z' }] },
+  const getISODate = (date) => {
+    return new Date(date).toISOString().split('T')[0]
+  }
 
-      { id: 14, name: 'API integration', status: 'todo', category: 'work', dayId: 4, date: '2024-01-18', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-18T09:00:00Z' }] },
-      { id: 15, name: 'Performance testing', status: 'todo', category: 'work', dayId: 4, date: '2024-01-18', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-18T10:00:00Z' }] },
-      { id: 16, name: 'Security audit', status: 'doing', category: 'work', dayId: 4, date: '2024-01-18', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-18T08:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-18T09:00:00Z' }] },
-      { id: 17, name: 'Backup systems', status: 'done', category: 'work', dayId: 4, date: '2024-01-18', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-18T07:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-18T08:00:00Z' }, { action: 'status_changed', status: 'done', timestamp: '2024-01-18T13:00:00Z' }] },
+  const generateWeekData = (weekId, weekNumber, startDate) => {
+    const weekDays = []
+    const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
-      { id: 18, name: 'Weekly report', status: 'todo', category: 'admin', dayId: 5, date: '2024-01-19', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-19T09:00:00Z' }] },
-      { id: 19, name: 'Team retrospective', status: 'doing', category: 'work', dayId: 5, date: '2024-01-19', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-19T10:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-19T14:00:00Z' }] },
-      { id: 20, name: 'Sprint planning', status: 'done', category: 'planning', dayId: 5, date: '2024-01-19', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-19T08:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-19T09:00:00Z' }, { action: 'status_changed', status: 'done', timestamp: '2024-01-19T11:00:00Z' }] },
+    for (let i = 0; i < 7; i++) {
+      const currentDay = new Date(startDate)
+      currentDay.setDate(startDate.getDate() + i)
 
-      { id: 21, name: 'Personal project', status: 'todo', category: 'personal', dayId: 6, date: '2024-01-20', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-20T10:00:00Z' }] },
-      { id: 22, name: 'Learn new technology', status: 'doing', category: 'learning', dayId: 6, date: '2024-01-20', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-20T11:00:00Z' }, { action: 'status_changed', status: 'doing', timestamp: '2024-01-20T12:00:00Z' }] },
+      weekDays.push({
+        id: (weekId - 1) * 7 + i + 1,
+        name: dayNames[i],
+        date: formatDate(currentDay),
+        fullDate: getISODate(currentDay),
+        weekId: weekId
+      })
+    }
 
-      { id: 23, name: 'Week planning', status: 'todo', category: 'planning', dayId: 7, date: '2024-01-21', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-21T09:00:00Z' }] },
-      { id: 24, name: 'Rest and recharge', status: 'done', category: 'personal', dayId: 7, date: '2024-01-21', history: [{ action: 'created', status: 'todo', timestamp: '2024-01-21T10:00:00Z' }, { action: 'status_changed', status: 'done', timestamp: '2024-01-21T18:00:00Z' }] }
-    ]
+    const endOfWeek = new Date(startDate)
+    endOfWeek.setDate(startDate.getDate() + 6)
 
-    const mockDays = [
-      {
-        id: 1,
-        name: 'MON',
-        date: 'Jan 15',
-        fullDate: '2024-01-15',
-        weekId: 1
-      },
-      {
-        id: 2,
-        name: 'TUE',
-        date: 'Jan 16',
-        fullDate: '2024-01-16',
-        weekId: 1
-      },
-      {
-        id: 3,
-        name: 'WED',
-        date: 'Jan 17',
-        fullDate: '2024-01-17',
-        weekId: 1
-      },
-      {
-        id: 4,
-        name: 'THU',
-        date: 'Jan 18',
-        fullDate: '2024-01-18',
-        weekId: 1
-      },
-      {
-        id: 5,
-        name: 'FRI',
-        date: 'Jan 19',
-        fullDate: '2024-01-19',
-        weekId: 1
-      },
-      {
-        id: 6,
-        name: 'SAT',
-        date: 'Jan 20',
-        fullDate: '2024-01-20',
-        weekId: 1
-      },
-      {
-        id: 7,
-        name: 'SUN',
-        date: 'Jan 21',
-        fullDate: '2024-01-21',
-        weekId: 1
-      }
-    ]
+    const week = {
+      id: weekId,
+      name: `Week ${weekNumber}`,
+      weekNumber: weekNumber,
+      startDate: getISODate(startDate),
+      endDate: getISODate(endOfWeek),
+      dateRange: `${formatDate(startDate)} - ${formatDate(endOfWeek)}, ${startDate.getFullYear()}`
+    }
 
-    const mockWeeks = [
-      {
-        id: 1,
-        name: 'Sprint Week 1',
-        startDate: '2024-01-15',
-        endDate: '2024-01-21',
-        dateRange: 'January 15 - 21, 2024'
-      }
-    ]
+    return { week, weekDays }
+  }
 
-    tasks.value = mockTasks
-    days.value = mockDays
-    weeks.value = mockWeeks
+  const findWeekByDateRange = (startDate) => {
+    const isoDate = getISODate(startDate)
+    return weeks.value.find(w => w.startDate === isoDate)
+  }
+
+  const generateCurrentWeek = () => {
+    const today = new Date()
+    const startOfWeek = getStartOfWeek(today)
+    return generateWeekData(1, 1, startOfWeek)
+  }
+
+  const goToPreviousWeek = () => {
+    const currentWeek = weeks.value[currentWeekIndex.value]
+
+    if (currentWeek.weekNumber === 1) {
+      return currentWeek
+    }
+
+    const prevWeekStart = new Date(currentWeek.startDate)
+    prevWeekStart.setDate(prevWeekStart.getDate() - 7)
+
+    const existingWeek = findWeekByDateRange(prevWeekStart)
+    if (existingWeek) {
+      setCurrentWeekById(existingWeek.id)
+      return existingWeek
+    }
+
+    const newWeekId = Math.max(...weeks.value.map(w => w.id), 0) + 1
+    const newWeekNumber = currentWeek.weekNumber - 1
+
+    const { week, weekDays } = generateWeekData(newWeekId, newWeekNumber, prevWeekStart)
+
+    weeks.value.unshift(week)
+    days.value.unshift(...weekDays)
+    currentWeekIndex.value++
+
+    saveToLocalStorage()
+    return week
+  }
+
+  const goToNextWeek = () => {
+    const currentWeek = weeks.value[currentWeekIndex.value]
+    const nextWeekStart = new Date(currentWeek.startDate)
+    nextWeekStart.setDate(nextWeekStart.getDate() + 7)
+
+    const existingWeek = findWeekByDateRange(nextWeekStart)
+    if (existingWeek) {
+      setCurrentWeekById(existingWeek.id)
+      return existingWeek
+    }
+
+    const newWeekId = Math.max(...weeks.value.map(w => w.id), 0) + 1
+    const newWeekNumber = currentWeek.weekNumber + 1
+
+    const { week, weekDays } = generateWeekData(newWeekId, newWeekNumber, nextWeekStart)
+
+    weeks.value.push(week)
+    days.value.push(...weekDays)
+
+    saveToLocalStorage()
+    return week
+  }
+
+  const canGoPrevious = computed(() => {
+    const currentWeek = weeks.value[currentWeekIndex.value]
+    return currentWeek && currentWeek.weekNumber > 1
+  })
+
+  const setCurrentWeekById = (weekId) => {
+    const index = weeks.value.findIndex(w => w.id === weekId)
+    if (index !== -1) {
+      currentWeekIndex.value = index
+      saveToLocalStorage()
+    }
+  }
+
+  const loadFromLocalStorage = () => {
+    try {
+      const storedTasks = localStorage.getItem('todoTasks')
+      const storedDays = localStorage.getItem('todoDays')
+      const storedWeeks = localStorage.getItem('todoWeeks')
+      const storedWeekIndex = localStorage.getItem('todoCurrentWeekIndex')
+
+      if (storedTasks) tasks.value = JSON.parse(storedTasks)
+      if (storedDays) days.value = JSON.parse(storedDays)
+      if (storedWeeks) weeks.value = JSON.parse(storedWeeks)
+      if (storedWeekIndex) currentWeekIndex.value = parseInt(storedWeekIndex)
+
+      return !!(storedTasks || storedDays || storedWeeks)
+    } catch (error) {
+      console.error('Error loading from localStorage:', error)
+      return false
+    }
+  }
+
+  // Save data to localStorage
+  const saveToLocalStorage = () => {
+    try {
+      localStorage.setItem('todoTasks', JSON.stringify(tasks.value))
+      localStorage.setItem('todoDays', JSON.stringify(days.value))
+      localStorage.setItem('todoWeeks', JSON.stringify(weeks.value))
+      localStorage.setItem('todoCurrentWeekIndex', currentWeekIndex.value.toString())
+    } catch (error) {
+      console.error('Error saving to localStorage:', error)
+    }
+  }
+
+  // Initialize store
+  const initializeStore = () => {
+    const hasStoredData = loadFromLocalStorage()
+
+    if (!hasStoredData) {
+      const { week, weekDays } = generateCurrentWeek()
+      weeks.value = [week]
+      days.value = weekDays
+      tasks.value = []
+      currentWeekIndex.value = 0
+      saveToLocalStorage()
+    }
   }
 
   const getTaskCountsForDay = (dayId) => {
@@ -118,20 +189,39 @@ export const useTodoStore = defineStore('todoStore', () => {
   }
 
   const getCurrentWeek = computed(() => {
-    return weeks.value.find(week => week.id === 1) || null
+    return weeks.value[currentWeekIndex.value] || null
   })
 
   const getCurrentWeekDays = computed(() => {
-    return days.value.filter(day => day.weekId === 1)
+    const currentWeek = weeks.value[currentWeekIndex.value]
+    if (!currentWeek) return []
+    return days.value.filter(day => day.weekId === currentWeek.id)
   })
 
+  const getWeekById = (weekId) => {
+    return weeks.value.find(w => w.id === weekId) || null
+  }
+
+  const getWeekDays = (weekId) => {
+    return days.value.filter(day => day.weekId === weekId)
+  }
+
   const getWeekTaskCount = computed(() => {
-    const weekTasks = tasks.value.filter(task => {
-      const day = days.value.find(d => d.id === task.dayId)
-      return day && day.weekId === 1
-    })
+    const currentWeek = weeks.value[currentWeekIndex.value]
+    if (!currentWeek) return 0
+
+    const weekDays = days.value.filter(d => d.weekId === currentWeek.id)
+    const weekDayIds = weekDays.map(d => d.id)
+    const weekTasks = tasks.value.filter(task => weekDayIds.includes(task.dayId))
+
     return weekTasks.length
   })
+
+  const getTaskCountForWeek = (weekId) => {
+    const weekDays = days.value.filter(d => d.weekId === weekId)
+    const weekDayIds = weekDays.map(d => d.id)
+    return tasks.value.filter(task => weekDayIds.includes(task.dayId)).length
+  }
 
   const getTaskWithDay = (taskId) => {
     const task = tasks.value.find(t => t.id === taskId)
@@ -148,13 +238,14 @@ export const useTodoStore = defineStore('todoStore', () => {
 
   const addTask = (taskData) => {
     const now = new Date()
-    const currentDate = now.toISOString().split('T')[0]
+    const day = days.value.find(d => d.id === taskData.dayId)
+    const taskDate = day ? day.fullDate : getISODate(now)
 
     const newTask = {
       id: Math.max(...tasks.value.map(t => t.id), 0) + 1,
       status: 'todo',
-      dayId: 1,
-      date: currentDate,
+      dayId: taskData.dayId || 1,
+      date: taskDate,
       ...taskData,
       history: [
         {
@@ -166,6 +257,7 @@ export const useTodoStore = defineStore('todoStore', () => {
       ]
     }
     tasks.value.push(newTask)
+    saveToLocalStorage()
     return newTask
   }
 
@@ -206,6 +298,7 @@ export const useTodoStore = defineStore('todoStore', () => {
         ...updates,
         history: newHistory
       }
+      saveToLocalStorage()
     }
   }
 
@@ -213,6 +306,7 @@ export const useTodoStore = defineStore('todoStore', () => {
     const taskIndex = tasks.value.findIndex(task => task.id === taskId)
     if (taskIndex !== -1) {
       tasks.value.splice(taskIndex, 1)
+      saveToLocalStorage()
     }
   }
 
@@ -221,21 +315,41 @@ export const useTodoStore = defineStore('todoStore', () => {
     return task?.history || []
   }
 
+  const clearAllData = () => {
+    tasks.value = []
+    days.value = []
+    weeks.value = []
+    currentWeekIndex.value = 0
+    localStorage.removeItem('todoTasks')
+    localStorage.removeItem('todoDays')
+    localStorage.removeItem('todoWeeks')
+    localStorage.removeItem('todoCurrentWeekIndex')
+  }
+
   return {
     weeks,
     days,
     tasks,
+    currentWeekIndex,
 
     getCurrentWeek,
     getCurrentWeekDays,
     getWeekTaskCount,
+    getWeekById,
+    getWeekDays,
+    getTaskCountForWeek,
+    canGoPrevious,
 
-    initializeMockData,
+    initializeStore,
+    goToPreviousWeek,
+    goToNextWeek,
+    setCurrentWeekById,
     getTaskCountsForDay,
     getTaskWithDay,
     addTask,
     updateTask,
     deleteTask,
     getTaskHistory,
+    clearAllData,
   }
 })

@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
 import AddTaskCard from '@/components/day/AddTaskCard.vue'
@@ -25,7 +25,9 @@ const dayTasks = computed(() => {
     done: allTasks.filter((task) => task.status === 'done'),
   }
 })
-
+onMounted(() => {
+  todoStore.initializeStore()
+})
 const taskCounts = computed(() => {
   return {
     todo: dayTasks.value.todo.length,
@@ -61,7 +63,6 @@ const handleEditTask = (taskId, updates) => {
     <div class="day-header">
       <div class="day-info">
         <div class="day-data">
-          <!-- <button @click="$router.push('/')" class="back-button">← Back to Week</button> -->
           <h1 class="text-primary">{{ currentDay.name }}</h1>
           <h3 class="text-secondary">{{ currentDay.date }}</h3>
         </div>
@@ -188,7 +189,6 @@ const handleEditTask = (taskId, updates) => {
   align-items: center;
   justify-content: space-between;
   gap: 5px;
-  /* text-transform: uppercase; */
   color: var(--text-primary);
 }
 .todo-color,

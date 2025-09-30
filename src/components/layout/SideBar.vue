@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import SearchComponent from '../ui/SearchComponent.vue'
 import { useTodoStore } from '@/stores/todoStore.js'
 
@@ -7,6 +7,25 @@ const todoStore = useTodoStore()
 
 const showSideBar = ref(true)
 const isMobile = ref(false)
+
+const allWeeks = computed(() => {
+  const currentWeek = todoStore.getCurrentWeek
+  if (!currentWeek) return []
+
+  const otherWeeks = todoStore.weeks.filter((w) => w.id !== currentWeek.id)
+
+  const sortedOthers = [...otherWeeks].sort((a, b) => a.weekNumber - b.weekNumber)
+
+  return [currentWeek, ...sortedOthers]
+})
+
+const getTaskCountForWeek = (weekId) => {
+  return todoStore.getTaskCountForWeek(weekId)
+}
+
+const isCurrentWeek = (weekId) => {
+  return todoStore.getCurrentWeek?.id === weekId
+}
 
 function checkScreenSize() {
   if (window.innerWidth < 767) {
@@ -17,9 +36,8 @@ function checkScreenSize() {
     showSideBar.value = true
   }
 }
-        // <button  class="back-button">← Back to Week</button>
 
-        function toggleSidebar() {
+function toggleSidebar() {
   showSideBar.value = !showSideBar.value
 }
 
@@ -44,7 +62,7 @@ onMounted(() => {
   window.addEventListener('resize', checkScreenSize)
   document.addEventListener('click', handleClickOutside)
 
-  todoStore.initializeMockData()
+  todoStore.initializeStore()
 })
 
 onUnmounted(() => {
@@ -79,19 +97,38 @@ function handleTaskSelected(task) {
       <SearchComponent :tasks="todoStore.tasks" @task-selected="handleTaskSelected" />
     </div>
 
-    <!-- <div class="week-list">
-      <h3 class="text-primary">📋 Current Week</h3>
-      <div v-if="todoStore.getCurrentWeek" class="week-item bg-card text-primary">
-        <span>{{ todoStore.getCurrentWeek.dateRange }}</span>
-        <span class="task-count text-secondary">{{ todoStore.getWeekTaskCount }} tasks</span>
+    <div class="week-list">
+      <div class="week-list-header">
+        <h3 class="text-primary">📋 All Weeks</h3>
+        <button class="view-all-btn text-secondary" @click="$router.push('/weeks')">
+          View All
+        </button>
+      </div>
+      <div class="week-list-scroll">
+        <div
+          v-for="week in allWeeks"
+          :key="week.id"
+          class="week-item bg-card text-primary"
+          :class="{ 'week-item--current': isCurrentWeek(week.id) }"
+          @click="$router.push(`/week/${week.id}`)"
+        >
+          <div class="week-item-content">
+            <div class="week-header-row">
+              <span class="week-name">{{ week.name }}</span>
+              <span v-if="isCurrentWeek(week.id)" class="current-indicator">●</span>
+            </div>
+            <span class="week-range text-secondary">{{ week.dateRange }}</span>
+            <span class="task-count text-secondary">
+              {{ getTaskCountForWeek(week.id) }} tasks
+            </span>
+          </div>
+        </div>
+
+        <div v-if="allWeeks.length === 0" class="empty-weeks">
+          <p class="text-secondary">No weeks yet</p>
+        </div>
       </div>
     </div>
-
-    <nav class="sidebar__nav">
-      <RouterLink to="/" class="nav-link text-secondary"> 📅 Current Week </RouterLink>
-      <a href="#" class="nav-link text-secondary">⚙️ Settings</a>
-      <a href="#" class="nav-link text-secondary">📊 Statistics</a>
-    </nav> -->
 
     <footer class="sidebar__footer">
       <small class="text-secondary">© 2025 My To-Do App</small>
@@ -213,34 +250,141 @@ function handleTaskSelected(task) {
 .week-list {
   flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.week-list h3 {
-  font-size: 16px;
+.week-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.week-list-header h3 {
+  font-size: 16px;
+  margin: 0;
   font-weight: 600;
+}
+
+.view-all-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.view-all-btn:hover {
+  /* background: var(--bg-hover); */
+  color: var(--primary-hover);
+}
+
+.week-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+
+.week-list-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.week-list-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.week-list-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.week-list-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }
 
 .week-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 8px;
   border: 1px solid var(--color-border);
   cursor: pointer;
   transition: all 0.2s;
+  position: relative;
 }
 
 .week-item:hover {
   background-color: var(--bg-hover);
-  transform: translateX(4px);
+  /* transform: translateX(2px); */
+}
+
+.week-item--current {
+  border-color: var(--primary-color);
+  background-color: var(--bg-hover);
+}
+
+.week-item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.week-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.week-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.current-indicator {
+  color: var(--primary-color);
+  font-size: 16px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.week-range {
+  font-size: 12px;
+  line-height: 1.3;
 }
 
 .task-count {
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 500;
+  padding: 2px 6px;
+  background: var(--bg-main);
+  border-radius: 8px;
+  align-self: flex-start;
+}
+
+.empty-weeks {
+  text-align: center;
+  padding: 20px;
+}
+
+.empty-weeks p {
+  font-size: 13px;
 }
 
 .sidebar__nav {
@@ -248,6 +392,7 @@ function handleTaskSelected(task) {
   flex-direction: column;
   padding: 0px 14px;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .nav-link {
@@ -262,12 +407,18 @@ function handleTaskSelected(task) {
 .nav-link:hover {
   background-color: var(--bg-card);
   color: var(--text-primary);
-  transform: translateX(4px);
+  /* transform: translateX(4px); */
+}
+
+.nav-link.router-link-active {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .sidebar__footer {
   padding-top: 16px;
   border-top: 1px solid var(--color-border);
   text-align: center;
+  flex-shrink: 0;
 }
 </style>
