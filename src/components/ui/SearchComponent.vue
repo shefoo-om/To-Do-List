@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import gsap from 'gsap'
+import { X, Briefcase, Sparkles, Dumbbell, Rocket, Heart, DollarSign } from 'lucide-vue-next'
 
 const props = defineProps({
   tasks: {
@@ -71,18 +72,17 @@ function getStatusClass(status) {
   return statusClasses[status.toLowerCase()] || 'status-todo'
 }
 
-function getCategoryEmoji(category) {
-  const categoryEmojis = {
-    work: '💼',
-    personal: '🏠',
-    health: '🏃',
-    learning: '📚',
-    design: '🎨',
-    research: '🔍',
-    planning: '📋',
-    admin: '📊',
-  }
-  return categoryEmojis[category.toLowerCase()] || '📝'
+const categoryIcons = {
+  work: Briefcase,
+  personal: Sparkles,
+  health: Dumbbell,
+  learning: Rocket,
+  social: Heart,
+  finance: DollarSign,
+}
+
+function getCategoryIcon(category) {
+  return categoryIcons[category.toLowerCase()] || Sparkles
 }
 
 function formatDate(dateString) {
@@ -105,7 +105,9 @@ function formatDate(dateString) {
         :placeholder="placeholder"
         class="search-input bg-card text-primary"
       />
-      <button v-if="query" @click="clearSearch" class="clear-button text-secondary">✕</button>
+      <button v-if="query" @click="clearSearch" class="clear-button text-secondary">
+        <X :size="16" />
+      </button>
     </div>
 
     <div class="results-container">
@@ -139,7 +141,8 @@ function formatDate(dateString) {
               <div class="task-name">{{ task.name }}</div>
               <div class="task-meta text-secondary">
                 <span class="category">
-                  {{ getCategoryEmoji(task.category) }} {{ task.category }}
+                  <component :is="getCategoryIcon(task.category)" :size="14" :stroke-width="2" />
+                  {{ task.category }}
                 </span>
                 <span class="date-info" v-if="task.date">{{ formatDate(task.date) }}</span>
               </div>
@@ -199,13 +202,17 @@ function formatDate(dateString) {
   background: none;
   border: none;
   padding: 4px;
-  font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
 }
 
 .clear-button:hover {
   color: var(--primary-hover);
+  /* background: var(--bg-hover); */
 }
 
 .results-container {
@@ -303,6 +310,9 @@ function formatDate(dateString) {
 
 .category {
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .date-info {

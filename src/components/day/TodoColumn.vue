@@ -41,6 +41,7 @@ const isEmpty = computed(() => props.tasks.length === 0)
 
     <div class="tasks-list" :class="{ empty: isEmpty }">
       <div v-if="isEmpty" class="empty-state">
+        <div class="empty-icon">📋</div>
         <p class="empty-text text-primary">No tasks to do</p>
         <p class="empty-hint text-secondary">Add a new task to get started!</p>
       </div>
@@ -84,7 +85,7 @@ const isEmpty = computed(() => props.tasks.length === 0)
 .tasks-list {
   flex: 1;
   flex: 1;
-  padding: 10px;
+  /* padding: 10px; */
   overflow-y: auto;
   min-height: 250px;
   /* max-height: 320px; */
@@ -104,6 +105,9 @@ const isEmpty = computed(() => props.tasks.length === 0)
 .empty-hint {
   font-weight: 400;
   font-size: 16px;
+}
+.empty-icon {
+  font-size: 40px;
 }
 .tasks-container {
   display: flex;

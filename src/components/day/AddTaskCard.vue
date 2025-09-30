@@ -1,17 +1,27 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useToast } from 'vue-toastification'
+import {
+  Briefcase,
+  Sparkles,
+  Dumbbell,
+  Rocket,
+  Heart,
+  DollarSign,
+  X,
+  ChevronDown
+} from 'lucide-vue-next'
 
 const emit = defineEmits(['add-task'])
 const toast = useToast()
 
 const categories = [
-  { value: 'work', label: 'Work', emoji: '💼' },
-  { value: 'personal', label: 'Personal', emoji: '😊' },
-  { value: 'health', label: 'Health & Fitness', emoji: '💪' },
-  { value: 'learning', label: 'Learning', emoji: '🧠' },
-  { value: 'social', label: 'Social & Family', emoji: '👨‍👩‍👧‍👦' },
-  { value: 'finance', label: 'Finance', emoji: '💳' },
+  { value: 'work', label: 'Work', icon: Briefcase },
+  { value: 'personal', label: 'Personal', icon: Sparkles },
+  { value: 'health', label: 'Health & Fitness', icon: Dumbbell },
+  { value: 'learning', label: 'Learning', icon: Rocket },
+  { value: 'social', label: 'Social & Family', icon: Heart },
+  { value: 'finance', label: 'Finance', icon: DollarSign },
 ]
 
 const selected = ref(null)
@@ -109,16 +119,19 @@ onUnmounted(() => {
         <div class="select-trigger" @click="toggleDropdown" :class="{ 'select-open': isOpen }">
           <div class="select-content">
             <span v-if="selected" class="selected-option">
-              {{ selected.emoji }} {{ selected.label }}
+              <component :is="selected.icon" :size="16" :stroke-width="2" />
+              {{ selected.label }}
             </span>
             <span v-else class="placeholder"> Select category </span>
           </div>
 
           <div class="select-actions">
             <button v-if="selected" type="button" class="clear-btn" @click.stop="clearSelection">
-              ✕
+              <X :size="14" />
             </button>
-            <div class="dropdown-arrow" :class="{ 'arrow-up': isOpen }">▼</div>
+            <div class="dropdown-arrow" :class="{ 'arrow-up': isOpen }">
+              <ChevronDown :size="16" />
+            </div>
           </div>
         </div>
 
@@ -131,7 +144,10 @@ onUnmounted(() => {
               :class="{ 'option-selected': selected?.value === category.value }"
               @click="selectOption(category)"
             >
-              <span class="option-content"> {{ category.emoji }} {{ category.label }} </span>
+              <span class="option-content">
+                <component :is="category.icon" :size="16" :stroke-width="2" />
+                {{ category.label }}
+              </span>
               <span v-if="selected?.value === category.value" class="check-mark"> ✓ </span>
             </div>
 
@@ -221,12 +237,15 @@ onUnmounted(() => {
 .selected-option {
   color: var(--text-primary, #1f2937);
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .select-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .clear-btn {
@@ -237,7 +256,9 @@ onUnmounted(() => {
   padding: 2px;
   border-radius: 50%;
   transition: all 0.2s ease;
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .clear-btn:hover {
@@ -247,7 +268,8 @@ onUnmounted(() => {
 .dropdown-arrow {
   color: var(--text-secondary, #6b7280);
   transition: transform 0.2s ease;
-  font-size: 12px;
+  display: flex;
+  align-items: center;
 }
 
 .dropdown-arrow.arrow-up {
@@ -315,6 +337,9 @@ onUnmounted(() => {
 
 .option-content {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .check-mark {

@@ -85,7 +85,7 @@ const isEmpty = computed(() => props.tasks.length === 0)
 .tasks-list {
   flex: 1;
   flex: 1;
-  padding: 10px;
+  /* padding: 10px; */
   overflow-y: auto;
   min-height: 250px;
   /* max-height: 320px; */
