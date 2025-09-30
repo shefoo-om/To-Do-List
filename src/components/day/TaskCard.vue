@@ -169,19 +169,18 @@ const handleKeyPress = (event) => {
   gap: 8px;
 }
 @media (max-width: 768px) {
-.task-card {
-  margin: 2px 0px 0px 0px;
-
-}
+  .task-card {
+    margin: 2px 0px 0px 0px;
+  }
 }
 .status-todo {
-  border-left: 2px solid var(--status-todo);
+  border-left: 2px solid var(--text-primary);
 }
 .status-doing {
-  border-left: 2px solid var(--status-doing);
+  border-left: 2px solid var(--text-primary);
 }
 .status-done {
-  border-left: 2px solid var(--status-done);
+  border-left: 2px solid var(--text-primary);
   opacity: 0.8;
 }
 
