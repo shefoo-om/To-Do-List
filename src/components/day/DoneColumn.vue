@@ -68,7 +68,7 @@ const isEmpty = computed(() => props.tasks.length === 0)
   height: 100%;
   background: var(--bg-card);
   border-radius: 12px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--status-done);
   overflow: hidden;
 }
 .column-header {
@@ -80,12 +80,12 @@ const isEmpty = computed(() => props.tasks.length === 0)
   padding: 16px 20px;
   font-size: 18px;
   font-weight: 500;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--status-done);
 }
 .tasks-list {
   flex: 1;
   flex: 1;
-  /* padding: 10px; */
+  padding-bottom: 10px;
   overflow-y: auto;
   min-height: 250px;
   /* max-height: 320px; */
