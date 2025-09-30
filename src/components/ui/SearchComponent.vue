@@ -1,7 +1,11 @@
+
 <script setup>
 import { ref, computed } from 'vue'
 import gsap from 'gsap'
+import { useRouter } from 'vue-router'
 import { X, Briefcase, Sparkles, Dumbbell, Rocket, Heart, DollarSign } from 'lucide-vue-next'
+
+const router = useRouter()
 
 const props = defineProps({
   tasks: {
@@ -14,7 +18,6 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['task-selected'])
 
 const query = ref('')
 
@@ -28,6 +31,12 @@ const searchResults = computed(() => {
       task.status.toLowerCase().includes(query.value.toLowerCase()),
   )
 })
+
+// Fixed: Navigate to the day that contains this task
+const handleTaskClick = (task) => {
+  // Navigate to the day view where this task belongs
+  router.push(`/day/${task.dayId}`)
+}
 
 function onBeforeEnter(el) {
   el.style.opacity = 0
@@ -54,10 +63,6 @@ function onLeave(el, done) {
   })
 }
 
-function selectTask(task) {
-  emit('task-selected', task)
-  query.value = ''
-}
 
 function clearSearch() {
   query.value = ''
@@ -134,7 +139,7 @@ function formatDate(dateString) {
             v-for="(task, index) in searchResults"
             :key="task.id"
             :data-index="index"
-            @click="selectTask(task)"
+            @click="handleTaskClick(task)"
             class="result-item bg-hover text-primary"
           >
             <div class="task-info">

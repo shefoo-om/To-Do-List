@@ -61,6 +61,7 @@ const handleEditTask = (taskId, updates) => {
     <div class="day-header">
       <div class="day-info">
         <div class="day-data">
+          <!-- <button @click="$router.push('/')" class="back-button">← Back to Week</button> -->
           <h1 class="text-primary">{{ currentDay.name }}</h1>
           <h3 class="text-secondary">{{ currentDay.date }}</h3>
         </div>
@@ -144,6 +145,19 @@ const handleEditTask = (taskId, updates) => {
   justify-content: space-between;
   align-items: center;
   gap: 6px;
+}
+.back-button {
+  background: var(--bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background: var(--bg-hover);
 }
 .day-data {
   display: flex;

@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
 
 const todoStore = useTodoStore()
@@ -14,9 +15,6 @@ const getTaskCounts = (dayId) => {
   return todoStore.getTaskCountsForDay(dayId)
 }
 
-const handleDayClick = (day) => {
-  console.log('Day clicked:', day)
-}
 
 onMounted(() => {
   todoStore.initializeMockData()
@@ -34,11 +32,11 @@ onMounted(() => {
       <p class="week-stats text-primary">{{ weekTaskCount }} total tasks this week</p>
     </div>
     <div class="days-tasks">
-      <div
+      <RouterLink
         v-for="day in currentWeekDays"
         :key="day.id"
+        :to="`/day/${day.id}`"
         class="day-card"
-        @click="handleDayClick(day)"
       >
         <div class="main-day">
           <h2 class="day-head">{{ day.name }}</h2>
@@ -58,7 +56,7 @@ onMounted(() => {
         <h2 class="total-tasks">
           Total: <span class="number-of-tasks">{{ getTaskCounts(day.id).total }} tasks</span>
         </h2>
-      </div>
+      </RouterLink>
     </div>
   </div>
 </template>
@@ -117,28 +115,27 @@ onMounted(() => {
   display: grid;
   justify-content: flex-start;
   grid-template-columns: repeat(4, 1fr);
-  gap: 32px;
+  gap: 10px;
 }
 
 @media (max-width: 1280px) {
   .days-tasks {
     grid-template-columns: repeat(3, 1fr);
-          gap: 22px;
-
+    gap: 12px;
   }
 }
 
 @media (max-width: 1024px) {
   .days-tasks {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 10px;
   }
 }
 
 @media (max-width: 900px) {
   .days-tasks {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 10px;
   }
 }
 
@@ -173,10 +170,13 @@ onMounted(() => {
   border: 1px solid var(--color-border);
   cursor: pointer;
   transition: all 200ms;
+  text-decoration: none; /* Remove underline from link */
+  color: inherit; /* Inherit text color */
 }
 
 .day-card:hover {
   background: var(--bg-hover);
+  /* text-decoration: none; */
 }
 
 @media (max-width: 767px) {

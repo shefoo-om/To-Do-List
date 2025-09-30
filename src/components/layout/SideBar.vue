@@ -17,8 +17,9 @@ function checkScreenSize() {
     showSideBar.value = true
   }
 }
+        // <button  class="back-button">← Back to Week</button>
 
-function toggleSidebar() {
+        function toggleSidebar() {
   showSideBar.value = !showSideBar.value
 }
 
@@ -72,13 +73,10 @@ function handleTaskSelected(task) {
       'sidebar--mobile': isMobile,
     }"
   >
-    <h1 class="sidebar__title text-primary">To-Do List</h1>
+    <div @click="$router.push('/')" class="sidebar__title text-primary">To-Do List</div>
 
     <div class="sidebar__search-container">
-      <SearchComponent
-        :tasks="todoStore.tasks"
-        @task-selected="handleTaskSelected"
-      />
+      <SearchComponent :tasks="todoStore.tasks" @task-selected="handleTaskSelected" />
     </div>
 
     <!-- <div class="week-list">
@@ -196,6 +194,7 @@ function handleTaskSelected(task) {
 }
 
 .sidebar__title {
+  cursor: pointer;
   font-size: 24px;
   font-weight: bold;
   margin: 0;
