@@ -4,10 +4,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
 import { ArrowBigLeftDash, ArrowBigRightDash } from 'lucide-vue-next'
+import { useToast } from 'vue-toastification'
 
 const route = useRoute()
 const router = useRouter()
 const todoStore = useTodoStore()
+const toast = useToast()
 
 const weekId = computed(() => parseInt(route.params.weekId) || 1)
 
@@ -39,10 +41,26 @@ const handlePreviousWeek = () => {
 }
 
 const handleNextWeek = () => {
-  const nextWeek = todoStore.goToNextWeek()
-  router.push(`/week/${nextWeek.id}`)
-}
+  const current = currentWeek.value
+  if (!current) return
 
+  const nextWeekStart = new Date(current.startDate)
+  nextWeekStart.setDate(nextWeekStart.getDate() + 7)
+
+  const existingWeek = todoStore.weeks.find(
+    (w) => w.startDate === nextWeekStart.toISOString().split('T')[0],
+  )
+
+  if (!existingWeek) {
+    toast.info('Creating a new week...', {
+      timeout: 2000,
+      icon: '➕',
+    })
+  }
+
+  const result = todoStore.goToNextWeek()
+  router.push(`/week/${result.week.id}`)
+}
 onMounted(() => {
   todoStore.initializeStore()
   todoStore.setCurrentWeekById(weekId.value)
@@ -188,7 +206,6 @@ onMounted(() => {
   .nav-button {
     width: 10%;
   }
-
 }
 
 .days-tasks {

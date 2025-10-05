@@ -68,10 +68,45 @@ export const useTodoStore = defineStore('todoStore', () => {
     return generateWeekData(1, 1, startOfWeek)
   }
 
-  const goToPreviousWeek = () => {
-    const currentWeek = weeks.value[currentWeekIndex.value]
+  const goToNextWeek = (fromWeekId = null) => {
+    const currentWeek = fromWeekId
+      ? weeks.value.find(w => w.id === fromWeekId)
+      : weeks.value[currentWeekIndex.value]
 
-    if (currentWeek.weekNumber === 1) {
+    if (!currentWeek) {
+      console.error('Current week not found')
+      return null
+    }
+
+    const nextWeekStart = new Date(currentWeek.startDate)
+    nextWeekStart.setDate(nextWeekStart.getDate() + 7)
+
+    const existingWeek = findWeekByDateRange(nextWeekStart)
+    if (existingWeek) {
+      setCurrentWeekById(existingWeek.id)
+      return { week: existingWeek, isNew: false }
+    }
+
+    const newWeekId = Math.max(...weeks.value.map(w => w.id), 0) + 1
+    const newWeekNumber = currentWeek.weekNumber + 1
+
+    const { week, weekDays } = generateWeekData(newWeekId, newWeekNumber, nextWeekStart)
+
+    weeks.value.push(week)
+    days.value.push(...weekDays)
+
+    setCurrentWeekById(newWeekId)
+    saveToLocalStorage()
+
+    return { week, isNew: true }
+  }
+
+  const goToPreviousWeek = (fromWeekId = null) => {
+    const currentWeek = fromWeekId
+      ? weeks.value.find(w => w.id === fromWeekId)
+      : weeks.value[currentWeekIndex.value]
+
+    if (!currentWeek || currentWeek.weekNumber === 1) {
       return currentWeek
     }
 
@@ -92,29 +127,6 @@ export const useTodoStore = defineStore('todoStore', () => {
     weeks.value.unshift(week)
     days.value.unshift(...weekDays)
     currentWeekIndex.value++
-
-    saveToLocalStorage()
-    return week
-  }
-
-  const goToNextWeek = () => {
-    const currentWeek = weeks.value[currentWeekIndex.value]
-    const nextWeekStart = new Date(currentWeek.startDate)
-    nextWeekStart.setDate(nextWeekStart.getDate() + 7)
-
-    const existingWeek = findWeekByDateRange(nextWeekStart)
-    if (existingWeek) {
-      setCurrentWeekById(existingWeek.id)
-      return existingWeek
-    }
-
-    const newWeekId = Math.max(...weeks.value.map(w => w.id), 0) + 1
-    const newWeekNumber = currentWeek.weekNumber + 1
-
-    const { week, weekDays } = generateWeekData(newWeekId, newWeekNumber, nextWeekStart)
-
-    weeks.value.push(week)
-    days.value.push(...weekDays)
 
     saveToLocalStorage()
     return week

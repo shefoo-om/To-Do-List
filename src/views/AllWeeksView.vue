@@ -60,9 +60,6 @@ onMounted(() => {
       </RouterLink>
     </div>
 
-    <div v-if="allWeeks.length === 0" class="empty-state">
-      <p class="text-secondary">No weeks available. Start by navigating through weeks!</p>
-    </div>
   </div>
 </template>
 
@@ -205,12 +202,4 @@ onMounted(() => {
   color: var(--primary-color);
 }
 
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.empty-state p {
-  font-size: 16px;
-}
 </style>
