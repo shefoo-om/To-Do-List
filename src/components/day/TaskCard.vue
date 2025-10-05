@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, h } from 'vue'
+import { useToast } from 'vue-toastification'
 import {
   Play,
   CheckCircle2,
@@ -31,6 +32,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['status-change', 'delete-task', 'edit-task'])
+const toast = useToast()
 
 const isEditing = ref(false)
 const editedName = ref('')
@@ -75,9 +77,52 @@ const handleStatusChange = (newStatus) => {
 }
 
 const handleDelete = () => {
-  if (confirm(`Are you sure you want to delete "${props.task.name}"?`)) {
-    emit('delete-task', props.task.id)
-  }
+  let timeoutId = null
+  let isDeleted = false
+
+  const content = h('div', { class: 'delete-toast-content' }, [
+    h('p', { class: 'delete-toast-message' }, `Delete "${props.task.name}"?`),
+    h('div', { class: 'delete-toast-actions' }, [
+      h(
+        'button',
+        {
+          class: 'delete-toast-btn confirm-btn',
+          onClick: () => {
+            if (!isDeleted) {
+              isDeleted = true
+              clearTimeout(timeoutId)
+              toast.clear()
+              emit('delete-task', props.task.id)
+              toast.success('Task deleted successfully', { timeout: 2000 })
+            }
+          },
+        },
+        'Delete',
+      ),
+      h(
+        'button',
+        {
+          class: 'delete-toast-btn cancel-btn',
+          onClick: () => {
+            if (!isDeleted) {
+              clearTimeout(timeoutId)
+              toast.clear()
+            }
+          },
+        },
+        'Cancel',
+      ),
+    ]),
+  ])
+
+  toast.warning(content, {
+    timeout: 5000,
+    closeOnClick: false,
+    closeButton: false,
+    onClose: () => {
+      clearTimeout(timeoutId)
+    },
+  })
 }
 
 const startEditing = () => {
@@ -88,6 +133,7 @@ const startEditing = () => {
 const saveEdit = () => {
   if (editedName.value.trim() && editedName.value !== props.task.name) {
     emit('edit-task', props.task.id, { name: editedName.value.trim() })
+    toast.success('Task updated', { timeout: 2000 })
   }
   isEditing.value = false
 }
@@ -154,6 +200,107 @@ const handleKeyPress = (event) => {
   </div>
 </template>
 
+<style>
+.delete-toast-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px;
+}
+
+.delete-toast-message {
+  margin: 0;
+  font-weight: 600;
+  font-size: 15px;
+  color: #1f2937;
+  letter-spacing: -0.01em;
+}
+
+.delete-toast-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.delete-toast-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.delete-toast-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.4s,
+    height 0.4s;
+}
+
+.delete-toast-btn:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
+.confirm-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.confirm-btn:active {
+  transform: translateY(0);
+}
+
+.cancel-btn {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.cancel-btn:hover {
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.cancel-btn:active {
+  transform: translateY(0);
+}
+
+/* Override default toast styles for delete confirmation */
+.Vue-Toastification__toast--warning {
+  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.15),
+    0 0 1px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.Vue-Toastification__toast--warning .Vue-Toastification__toast-body {
+  padding: 8px 4px;
+}
+</style>
+
 <style scoped>
 .task-card {
   background: var(--bg-main);
@@ -168,17 +315,21 @@ const handleKeyPress = (event) => {
   flex-direction: column;
   gap: 8px;
 }
+
 @media (max-width: 768px) {
   .task-card {
     margin: 2px 0px 0px 0px;
   }
 }
+
 .status-todo {
   border-left: 2px solid var(--text-primary);
 }
+
 .status-doing {
   border-left: 2px solid var(--text-primary);
 }
+
 .status-done {
   border-left: 2px solid var(--text-primary);
   opacity: 0.8;

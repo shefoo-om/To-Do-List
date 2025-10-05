@@ -137,6 +137,32 @@ export const useTodoStore = defineStore('todoStore', () => {
     return currentWeek && currentWeek.weekNumber > 1
   })
 
+  const getCurrentWeekByDate = computed(() => {
+    const today = new Date()
+    const todayISO = getISODate(today)
+
+    // ابحث عن الأسبوع اللي تاريخ اليوم واقع بينه
+    return weeks.value.find(week => {
+      return todayISO >= week.startDate && todayISO <= week.endDate
+    }) || weeks.value[0] || null
+  })
+
+  const getCurrentWeekDaysByDate = computed(() => {
+    const currentWeek = getCurrentWeekByDate.value
+    if (!currentWeek) return []
+    return days.value.filter(day => day.weekId === currentWeek.id)
+  })
+
+  const getWeekTaskCountByDate = computed(() => {
+    const currentWeek = getCurrentWeekByDate.value
+    if (!currentWeek) return 0
+
+    const weekDays = days.value.filter(d => d.weekId === currentWeek.id)
+    const weekDayIds = weekDays.map(d => d.id)
+    const weekTasks = tasks.value.filter(task => weekDayIds.includes(task.dayId))
+
+    return weekTasks.length
+  })
   const setCurrentWeekById = (weekId) => {
     const index = weeks.value.findIndex(w => w.id === weekId)
     if (index !== -1) {
@@ -351,6 +377,10 @@ export const useTodoStore = defineStore('todoStore', () => {
     getWeekDays,
     getTaskCountForWeek,
     canGoPrevious,
+    getCurrentWeekByDate,
+    getCurrentWeekDaysByDate,
+    getWeekTaskCountByDate,
+
 
     initializeStore,
     goToPreviousWeek,

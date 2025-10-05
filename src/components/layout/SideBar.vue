@@ -2,30 +2,45 @@
 import { onMounted, onUnmounted, ref, computed } from 'vue'
 import SearchComponent from '../ui/SearchComponent.vue'
 import { useTodoStore } from '@/stores/todoStore.js'
+import { useRoute } from 'vue-router'
 
 const todoStore = useTodoStore()
+const route = useRoute()
 
 const showSideBar = ref(true)
 const isMobile = ref(false)
-
-const allWeeks = computed(() => {
-  const currentWeek = todoStore.getCurrentWeek
-  if (!currentWeek) return []
-
-  const otherWeeks = todoStore.weeks.filter((w) => w.id !== currentWeek.id)
-
-  const sortedOthers = [...otherWeeks].sort((a, b) => a.weekNumber - b.weekNumber)
-
-  return [currentWeek, ...sortedOthers]
-})
 
 const getTaskCountForWeek = (weekId) => {
   return todoStore.getTaskCountForWeek(weekId)
 }
 
+const currentRouteWeekId = computed(() => {
+  if (route.params.weekId) {
+    return parseInt(route.params.weekId)
+  }
+
+  if (route.path === '/' || route.name === 'home') {
+    return todoStore.getCurrentWeekByDate?.id
+  }
+
+  return todoStore.getCurrentWeek?.id
+})
+
 const isCurrentWeek = (weekId) => {
-  return todoStore.getCurrentWeek?.id === weekId
+  return currentRouteWeekId.value === weekId
 }
+
+const allWeeks = computed(() => {
+  const currentId = currentRouteWeekId.value
+  const currentWeek = todoStore.weeks.find((w) => w.id === currentId)
+
+  if (!currentWeek) return todoStore.weeks
+
+  const otherWeeks = todoStore.weeks.filter((w) => w.id !== currentId)
+  const sortedOthers = [...otherWeeks].sort((a, b) => a.weekNumber - b.weekNumber)
+
+  return [currentWeek, ...sortedOthers]
+})
 
 function checkScreenSize() {
   if (window.innerWidth < 767) {

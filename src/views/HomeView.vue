@@ -6,9 +6,9 @@ import { useTodoStore } from '@/stores/todoStore.js'
 const todoStore = useTodoStore()
 
 const {
-  getCurrentWeek: currentWeek,
-  getCurrentWeekDays: currentWeekDays,
-  getWeekTaskCount: weekTaskCount,
+  getCurrentWeekByDate: currentWeek,
+  getCurrentWeekDaysByDate: currentWeekDays,
+  getWeekTaskCountByDate: weekTaskCount,
 } = todoStore
 
 const getTaskCounts = (dayId) => {
