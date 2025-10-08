@@ -24,7 +24,14 @@ export const useTodoStore = defineStore('todoStore', () => {
   const getISODate = (date) => {
     return new Date(date).toISOString().split('T')[0]
   }
+  const getCurrentDay = computed(() => {
+    const today = new Date()
+    const todayISO = getISODate(today)
 
+    // eslint-disable-next-line no-unused-vars
+    const _ = tasks.value.length
+    return days.value.find(day => day.fullDate === todayISO) || null
+  })
   const generateWeekData = (weekId, weekNumber, startDate) => {
     const weekDays = []
     const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
@@ -380,6 +387,7 @@ export const useTodoStore = defineStore('todoStore', () => {
     getCurrentWeekByDate,
     getCurrentWeekDaysByDate,
     getWeekTaskCountByDate,
+    getCurrentDay,
 
 
     initializeStore,
