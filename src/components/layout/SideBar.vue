@@ -145,6 +145,7 @@ function handleTaskSelected(task) {
       </div>
     </div>
 
+    <div class="content-list">afsdsdf</div>
     <footer class="sidebar__footer">
       <small class="text-secondary">© 2025 My To-Do App</small>
     </footer>
@@ -161,7 +162,7 @@ function handleTaskSelected(task) {
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
   transition:
     transform 0.3s ease,
     opacity 0.3s ease;
@@ -259,14 +260,20 @@ function handleTaskSelected(task) {
 }
 
 .sidebar__search-container {
+  height: 28%;
   position: relative;
 }
 
 .week-list {
   flex: 1;
-  min-height: 0;
+  height: 40%;
   display: flex;
+  overflow-y: auto;
   flex-direction: column;
+}
+
+.content-list {
+  height: 15%;
 }
 
 .week-list-header {
@@ -347,6 +354,7 @@ function handleTaskSelected(task) {
 }
 
 .week-item-content {
+  height: 60px;
   display: flex;
   flex-direction: column;
   gap: 4px;

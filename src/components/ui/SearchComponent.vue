@@ -204,11 +204,11 @@ function formatDate(dateString) {
 <style scoped>
 .search-component {
   position: relative;
-  height: 270px;
+  height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 2px;
 }
 
 .search-input-container {
@@ -220,7 +220,7 @@ function formatDate(dateString) {
 
 .search-input {
   width: 100%;
-  padding: 12px;
+  padding: 8px 12px;
   padding-right: 40px;
   border: 1px solid var(--color-border);
   border-radius: 10px;
