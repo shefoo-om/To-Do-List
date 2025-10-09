@@ -74,7 +74,6 @@ onMounted(() => {
 
 .weeks-header {
   width: 100%;
-  padding: 16px;
   border-radius: 16px;
 }
 
@@ -118,7 +117,6 @@ onMounted(() => {
 
 .week-card:hover {
   background: var(--bg-hover);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .week-card--current {
