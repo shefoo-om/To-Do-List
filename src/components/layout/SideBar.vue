@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref, computed } from 'vue'
 import SearchComponent from '../ui/SearchComponent.vue'
 import { useTodoStore } from '@/stores/todoStore.js'
 import { useRoute } from 'vue-router'
+import { SettingsIcon } from 'lucide-vue-next'
 
 const todoStore = useTodoStore()
 const route = useRoute()
@@ -145,7 +146,18 @@ function handleTaskSelected(task) {
       </div>
     </div>
 
-    <div class="content-list">afsdsdf</div>
+    <div class="content-list">
+      <div class="content-list-header">
+        <h3 class="text-primary">More</h3>
+      </div>
+      <div class="content-list-items">
+        <a @click="$router.push('/settings')" class="content-item text-secondary">
+          <SettingsIcon class="content-item-icon" size="18" />
+          <span class="content-item-text">Settings</span>
+        </a>
+      </div>
+    </div>
+
     <footer class="sidebar__footer">
       <small class="text-secondary">© 2025 My To-Do App</small>
     </footer>
@@ -274,6 +286,44 @@ function handleTaskSelected(task) {
 
 .content-list {
   height: 15%;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-list-header {
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.content-list-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.content-list-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.content-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.content-item-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.content-item-text {
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .week-list-header {
