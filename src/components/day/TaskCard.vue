@@ -323,15 +323,15 @@ const handleKeyPress = (event) => {
 }
 
 .status-todo {
-  border-left: 2px solid var(--text-primary);
+  border-left: 2px solid var(--primary-color);
 }
 
 .status-doing {
-  border-left: 2px solid var(--text-primary);
+  border-left: 2px solid var(--primary-color);
 }
 
 .status-done {
-  border-left: 2px solid var(--text-primary);
+  border-left: 2px solid var(--primary-color);
   opacity: 0.8;
 }
 

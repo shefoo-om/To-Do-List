@@ -23,14 +23,26 @@ const toastOptions = {
   transition: "Vue-Toastification__slideBlurred",
   maxToasts: 20,
   newestOnTop: true
-
 }
 
+function loadColorsOnStartup() {
+  const saved = localStorage.getItem('custom-primary-colors')
+  if (saved) {
+    try {
+      const colors = JSON.parse(saved)
+      document.documentElement.style.setProperty('--primary-color', colors.primary)
+      document.documentElement.style.setProperty('--primary-hover', colors.hover)
+    } catch (e) {
+      console.error('Failed to load colors:', e)
+    }
+  }
+}
+
+loadColorsOnStartup()
 
 const app = createApp(App)
 app.use(createPinia())
 app.use(router)
-
 app.use(Toast, toastOptions)
 app.mount('#app')
 
