@@ -9,7 +9,7 @@ import {
   Heart,
   DollarSign,
   X,
-  ChevronDown
+  ChevronDown,
 } from 'lucide-vue-next'
 
 const emit = defineEmits(['add-task'])
@@ -29,6 +29,9 @@ const taskName = ref('')
 const isOpen = ref(false)
 const searchTerm = ref('')
 const selectRef = ref(null)
+const selectTriggerRef = ref(null)
+const highlightedIndex = ref(-1)
+const taskInputRef = ref(null)
 
 const filteredCategories = computed(() => {
   if (!searchTerm.value) return categories
@@ -41,29 +44,98 @@ const toggleDropdown = () => {
   isOpen.value = !isOpen.value
   if (isOpen.value) {
     searchTerm.value = ''
+    highlightedIndex.value = selected.value
+      ? categories.findIndex((c) => c.value === selected.value.value)
+      : 0
   }
 }
+const addTaskButtonRef = ref(null)
 
 const selectOption = (option) => {
   selected.value = option
   isOpen.value = false
   searchTerm.value = ''
+  highlightedIndex.value = -1
+  setTimeout(() => {
+    addTaskButtonRef.value?.focus()
+  }, 100)
 }
 
-const clearSelection = () => {
+const clearSelection = (event) => {
+  event?.stopPropagation()
   selected.value = null
   isOpen.value = false
+  highlightedIndex.value = -1
 }
 
 const handleClickOutside = (event) => {
   if (selectRef.value && !selectRef.value.contains(event.target)) {
     isOpen.value = false
+    highlightedIndex.value = -1
   }
 }
 
-const handleKeydown = (event) => {
-  if (event.key === 'Escape') {
+const handleSelectKeydown = (event) => {
+  if (!isOpen.value && (event.key === 'Enter' || event.key === ' ')) {
+    event.preventDefault()
+    toggleDropdown()
+    return
+  }
+
+  if (isOpen.value) {
+    switch (event.key) {
+      case 'Escape':
+        event.preventDefault()
+        isOpen.value = false
+        highlightedIndex.value = -1
+        selectTriggerRef.value?.focus()
+        break
+
+      case 'ArrowDown':
+        event.preventDefault()
+        highlightedIndex.value = Math.min(
+          highlightedIndex.value + 1,
+          filteredCategories.value.length - 1,
+        )
+        break
+
+      case 'ArrowUp':
+        event.preventDefault()
+        highlightedIndex.value = Math.max(highlightedIndex.value - 1, 0)
+        break
+
+      case 'Enter':
+        event.preventDefault()
+        if (
+          highlightedIndex.value >= 0 &&
+          highlightedIndex.value < filteredCategories.value.length
+        ) {
+          selectOption(filteredCategories.value[highlightedIndex.value])
+          selectTriggerRef.value?.focus()
+        }
+        break
+
+      case 'Tab':
+        isOpen.value = false
+        highlightedIndex.value = -1
+        break
+    }
+  }
+}
+
+const handleGlobalKeydown = (event) => {
+  if (event.key === 'Escape' && isOpen.value) {
     isOpen.value = false
+    highlightedIndex.value = -1
+  }
+}
+
+const handleTaskInputEnter = () => {
+  if (taskName.value.trim()) {
+    selectTriggerRef.value?.focus()
+    if (!isOpen.value) {
+      toggleDropdown()
+    }
   }
 }
 
@@ -95,16 +167,23 @@ const handleSubmit = () => {
   })
   taskName.value = ''
   selected.value = null
+
+  setTimeout(() => {
+    taskInputRef.value?.focus()
+  }, 100)
 }
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
-  document.addEventListener('keydown', handleKeydown)
+  document.addEventListener('keydown', handleGlobalKeydown)
+  setTimeout(() => {
+    taskInputRef.value?.focus()
+  }, 100)
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
-  document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('keydown', handleGlobalKeydown)
 })
 </script>
 
@@ -113,10 +192,30 @@ onUnmounted(() => {
     <h3 class="add-task-header">Add Task</h3>
 
     <form class="add-task-form" @submit.prevent="handleSubmit">
-      <input v-model="taskName" placeholder="Enter your Task..." class="add-task-input" required />
+      <input
+        ref="taskInputRef"
+        v-model="taskName"
+        placeholder="Enter your Task..."
+        class="add-task-input"
+        required
+        aria-label="Task name"
+        @keydown.enter.prevent="handleTaskInputEnter"
+      />
 
       <div class="custom-select" ref="selectRef">
-        <div class="select-trigger" @click="toggleDropdown" :class="{ 'select-open': isOpen }">
+        <div
+          class="select-trigger"
+          ref="selectTriggerRef"
+          @click="toggleDropdown"
+          @keydown="handleSelectKeydown"
+          :class="{ 'select-open': isOpen }"
+          tabindex="0"
+          role="combobox"
+          :aria-expanded="isOpen"
+          :aria-haspopup="true"
+          aria-label="Select category"
+          :aria-activedescendant="highlightedIndex >= 0 ? `option-${highlightedIndex}` : undefined"
+        >
           <div class="select-content">
             <span v-if="selected" class="selected-option">
               <component :is="selected.icon" :size="16" :stroke-width="2" />
@@ -126,7 +225,15 @@ onUnmounted(() => {
           </div>
 
           <div class="select-actions">
-            <button v-if="selected" type="button" class="clear-btn" @click.stop="clearSelection">
+            <button
+              v-if="selected"
+              type="button"
+              class="clear-btn"
+              @click="clearSelection"
+              @keydown.enter.prevent="clearSelection"
+              tabindex="-1"
+              aria-label="Clear selection"
+            >
               <X :size="14" />
             </button>
             <div class="dropdown-arrow" :class="{ 'arrow-up': isOpen }">
@@ -135,14 +242,21 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div v-if="isOpen" class="dropdown-menu">
+        <div v-if="isOpen" class="dropdown-menu" role="listbox">
           <div class="options-list">
             <div
-              v-for="category in filteredCategories"
+              v-for="(category, index) in filteredCategories"
               :key="category.value"
+              :id="`option-${index}`"
               class="option-item"
-              :class="{ 'option-selected': selected?.value === category.value }"
+              :class="{
+                'option-selected': selected?.value === category.value,
+                'option-highlighted': highlightedIndex === index,
+              }"
               @click="selectOption(category)"
+              @mouseenter="highlightedIndex = index"
+              role="option"
+              :aria-selected="selected?.value === category.value"
             >
               <span class="option-content">
                 <component :is="category.icon" :size="16" :stroke-width="2" />
@@ -156,7 +270,13 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <button type="submit" class="add-task-button" :disabled="!taskName.trim() || !selected">
+      <button
+        ref="addTaskButtonRef"
+        type="submit"
+        class="add-task-button"
+        :disabled="!taskName.trim() || !selected"
+        aria-label="Add task"
+      >
         Add Task
       </button>
     </form>
@@ -170,7 +290,7 @@ onUnmounted(() => {
   flex-direction: column;
   justify-content: space-between;
   gap: 22px;
-  padding: 10px 24px 20px;
+  padding: 10px 14px 20px;
   border-radius: 18px;
   background: var(--bg-card, #fff);
   border: 1px solid var(--color-border, #e5e7eb);
@@ -225,6 +345,11 @@ onUnmounted(() => {
   min-height: 40px;
 }
 
+.select-trigger:focus {
+  outline: none;
+  border-color: var(--primary-color, #3b82f6);
+}
+
 .select-trigger.select-open {
   border-color: var(--primary-color, #3b82f6);
 }
@@ -240,6 +365,10 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+.placeholder {
+  color: var(--text-secondary, #9ca3af);
 }
 
 .select-actions {
@@ -276,7 +405,6 @@ onUnmounted(() => {
   transform: rotate(180deg);
 }
 
-/* Dropdown Menu */
 .dropdown-menu {
   position: absolute;
   top: 100%;
@@ -324,7 +452,8 @@ onUnmounted(() => {
   border-bottom: none;
 }
 
-.option-item:hover {
+.option-item:hover,
+.option-item.option-highlighted {
   background: var(--bg-hover, #f8fafc);
   color: var(--primary-color, #3b82f6);
 }
@@ -367,6 +496,11 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
+.add-task-button:focus {
+  outline: none;
+  background: var(--primary-color, #3b82f6);
+}
+
 .add-task-button:hover:not(:disabled) {
   background: var(--primary-color, #3b82f6);
 }
@@ -394,6 +528,7 @@ onUnmounted(() => {
     width: 30%;
   }
 }
+
 @media (max-width: 768px) {
   .add-task-form {
     flex-direction: column;
@@ -419,6 +554,7 @@ onUnmounted(() => {
   background: var(--bg-scroll-thumb, #cbd5e1);
   border-radius: 3px;
 }
+
 .options-list::-webkit-scrollbar-thumb:hover {
   background: var(--bg-scroll-thumb-hover, #94a3b8);
 }

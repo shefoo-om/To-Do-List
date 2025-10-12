@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, h } from 'vue'
+import { ref, computed, h, nextTick } from 'vue'
 import { useToast } from 'vue-toastification'
 import {
   Play,
@@ -80,40 +80,65 @@ const handleDelete = () => {
   let timeoutId = null
   let isDeleted = false
 
-  const content = h('div', { class: 'delete-toast-content' }, [
-    h('p', { class: 'delete-toast-message' }, `Delete "${props.task.name}"?`),
-    h('div', { class: 'delete-toast-actions' }, [
-      h(
-        'button',
-        {
-          class: 'delete-toast-btn confirm-btn',
-          onClick: () => {
-            if (!isDeleted) {
-              isDeleted = true
-              clearTimeout(timeoutId)
-              toast.clear()
-              emit('delete-task', props.task.id)
-              toast.success('Task deleted successfully', { timeout: 2000 })
-            }
+  const handleKeyDown = (event) => {
+    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      event.preventDefault()
+      const buttons = document.querySelectorAll('.delete-toast-btn')
+      const currentIndex = Array.from(buttons).indexOf(document.activeElement)
+
+      if (currentIndex !== -1) {
+        let nextIndex
+        if (event.key === 'ArrowRight') {
+          nextIndex = (currentIndex + 1) % buttons.length
+        } else {
+          nextIndex = (currentIndex - 1 + buttons.length) % buttons.length
+        }
+        buttons[nextIndex]?.focus()
+      }
+    }
+  }
+
+  const content = h(
+    'div',
+    {
+      class: 'delete-toast-content',
+      onKeydown: handleKeyDown,
+    },
+    [
+      h('p', { class: 'delete-toast-message' }, `Delete "${props.task.name}"?`),
+      h('div', { class: 'delete-toast-actions' }, [
+        h(
+          'button',
+          {
+            class: 'delete-toast-btn confirm-btn',
+            onClick: () => {
+              if (!isDeleted) {
+                isDeleted = true
+                clearTimeout(timeoutId)
+                toast.clear()
+                emit('delete-task', props.task.id)
+                toast.success('Task deleted successfully', { timeout: 2000 })
+              }
+            },
           },
-        },
-        'Delete',
-      ),
-      h(
-        'button',
-        {
-          class: 'delete-toast-btn cancel-btn',
-          onClick: () => {
-            if (!isDeleted) {
-              clearTimeout(timeoutId)
-              toast.clear()
-            }
+          'Delete',
+        ),
+        h(
+          'button',
+          {
+            class: 'delete-toast-btn cancel-btn',
+            onClick: () => {
+              if (!isDeleted) {
+                clearTimeout(timeoutId)
+                toast.clear()
+              }
+            },
           },
-        },
-        'Cancel',
-      ),
-    ]),
-  ])
+          'Cancel',
+        ),
+      ]),
+    ],
+  )
 
   toast.warning(content, {
     timeout: 5000,
@@ -122,6 +147,16 @@ const handleDelete = () => {
     onClose: () => {
       clearTimeout(timeoutId)
     },
+  })
+
+  // Focus the delete button after toast is rendered
+  nextTick(() => {
+    setTimeout(() => {
+      const deleteButton = document.querySelector('.delete-toast-btn.confirm-btn')
+      if (deleteButton) {
+        deleteButton.focus()
+      }
+    }, 100)
   })
 }
 
@@ -166,7 +201,6 @@ const handleKeyPress = (event) => {
         />
         <h4 v-else class="task-name text-primary">{{ task.name }}</h4>
       </div>
-
       <div class="task-meta">
         <span class="task-category">
           <component :is="getCategoryIcon(task.category)" :size="14" :stroke-width="2" />
@@ -235,6 +269,11 @@ const handleKeyPress = (event) => {
   overflow: hidden;
 }
 
+.delete-toast-btn:focus {
+  outline: none;
+  box-shadow: 0 5px 3px rgba(0, 0, 0, 0.1);
+}
+
 .delete-toast-btn::before {
   content: '';
   position: absolute;
@@ -256,18 +295,21 @@ const handleKeyPress = (event) => {
 }
 
 .confirm-btn {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: #dc2626;
   color: white;
   border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
 .confirm-btn:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  background: #ef4444;
 }
 
 .confirm-btn:active {
   transform: translateY(0);
+}
+
+.confirm-btn:focus {
+  background: #ef4444;
 }
 
 .cancel-btn {
@@ -285,7 +327,6 @@ const handleKeyPress = (event) => {
   transform: translateY(0);
 }
 
-/* Override default toast styles for delete confirmation */
 .Vue-Toastification__toast--warning {
   background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
   border: 1px solid #e5e7eb;
@@ -306,14 +347,19 @@ const handleKeyPress = (event) => {
   background: var(--bg-main);
   padding: 14px;
   border-radius: 8px;
-  margin: 4px 4px 0px 4px;
+  margin: 4px 4px 8px;
   transition: all 0.2s ease;
   cursor: pointer;
   position: relative;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  transition: all 0.2 ease;
+}
+
+.task-card:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {
