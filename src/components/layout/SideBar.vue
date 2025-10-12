@@ -384,7 +384,7 @@ function handleTaskSelected(task) {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
+  padding: 4px 12px 14px;
   border-radius: 8px;
   margin-bottom: 8px;
   border: 1px solid var(--color-border);
