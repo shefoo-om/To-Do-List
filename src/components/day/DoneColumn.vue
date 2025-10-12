@@ -77,7 +77,7 @@ const isEmpty = computed(() => props.tasks.length === 0)
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  padding: 16px 20px;
+  padding: 10px 16px;
   font-size: 18px;
   font-weight: 500;
   border-bottom: 1px solid var(--color-border);
