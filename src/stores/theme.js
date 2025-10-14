@@ -1,4 +1,3 @@
-// src/stores/theme.js
 import { defineStore } from 'pinia'
 
 export const useThemeStore = defineStore('theme', {
@@ -57,23 +56,19 @@ export const useThemeStore = defineStore('theme', {
     setTheme(themeId) {
       this.currentTheme = themeId
 
-      // Apply theme to HTML element
       document.documentElement.setAttribute('data-theme', themeId)
 
-      // Save to localStorage
       localStorage.setItem('user-theme', themeId)
 
       console.log(`Theme changed to: ${themeId}`)
     },
 
     loadTheme() {
-      // Load saved theme from localStorage
       const savedTheme = localStorage.getItem('user-theme')
 
       if (savedTheme && this.availableThemes.find(theme => theme.id === savedTheme)) {
         this.setTheme(savedTheme)
       } else {
-        // Default to light theme
         this.setTheme('light')
       }
     },
@@ -87,10 +82,8 @@ export const useThemeStore = defineStore('theme', {
     setCustomColor(colorType, colorValue) {
       this.customColors[colorType] = colorValue
 
-      // Apply custom color to CSS custom properties
       document.documentElement.style.setProperty(`--${colorType}-color`, colorValue)
 
-      // Save to localStorage
       localStorage.setItem('custom-colors', JSON.stringify(this.customColors))
     },
 
@@ -100,7 +93,6 @@ export const useThemeStore = defineStore('theme', {
         try {
           this.customColors = JSON.parse(savedColors)
 
-          // Apply saved custom colors
           Object.entries(this.customColors).forEach(([colorType, colorValue]) => {
             document.documentElement.style.setProperty(`--${colorType}-color`, colorValue)
           })
@@ -118,7 +110,6 @@ export const useThemeStore = defineStore('theme', {
         text: '#1F2937'
       }
 
-      // Remove custom color overrides
       document.documentElement.style.removeProperty('--primary-color')
       document.documentElement.style.removeProperty('--background-color')
       document.documentElement.style.removeProperty('--text-color')

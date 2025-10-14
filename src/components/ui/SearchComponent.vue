@@ -405,7 +405,6 @@ function formatDate(dateString) {
   opacity: 0.7;
 }
 
-/* Scrollbar styling */
 .results-list::-webkit-scrollbar {
   width: 4px;
   transition: all 0.3s ease;

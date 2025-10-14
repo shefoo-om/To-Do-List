@@ -156,7 +156,6 @@ function resetColors() {
 <style scoped>
 .settings-page {
   min-height: 100vh;
-  /* padding: 20px; */
 }
 
 .settings-wrapper {
@@ -220,7 +219,6 @@ function resetColors() {
   opacity: 0.8;
 }
 
-/* Color Preview */
 .color-preview-section {
   display: grid;
   grid-template-columns: 1fr 1fr;

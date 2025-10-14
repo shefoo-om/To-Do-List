@@ -88,7 +88,6 @@ const isEmpty = computed(() => props.tasks.length === 0)
   padding-bottom: 10px;
   overflow-y: auto;
   min-height: 250px;
-  /* max-height: 320px; */
 }
 .empty-state {
   height: 100%;

@@ -149,7 +149,6 @@ const handleDelete = () => {
     },
   })
 
-  // Focus the delete button after toast is rendered
   nextTick(() => {
     setTimeout(() => {
       const deleteButton = document.querySelector('.delete-toast-btn.confirm-btn')

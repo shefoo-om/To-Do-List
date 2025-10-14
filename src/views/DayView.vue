@@ -260,8 +260,6 @@ const handleEditTask = (taskId, updates) => {
 
 @media (max-width: 640px) {
   .header-left {
-    /* flex-direction: column; */
-    /* align-items: f; */
     gap: 4px;
     margin-bottom: 10pxX;
   }

@@ -352,7 +352,6 @@ function handleTaskSelected(task) {
 }
 
 .view-all-btn:hover {
-  /* background: var(--bg-hover); */
   color: var(--primary-hover);
 }
 
@@ -395,7 +394,6 @@ function handleTaskSelected(task) {
 
 .week-item:hover {
   background-color: var(--bg-hover);
-  /* transform: translateX(2px); */
 }
 
 .week-item--current {
@@ -480,7 +478,6 @@ function handleTaskSelected(task) {
 .nav-link:hover {
   background-color: var(--bg-card);
   color: var(--text-primary);
-  /* transform: translateX(4px); */
 }
 
 .nav-link.router-link-active {
