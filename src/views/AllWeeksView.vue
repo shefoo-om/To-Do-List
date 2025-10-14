@@ -16,7 +16,7 @@ const getTaskCounts = (weekId) => {
 }
 
 const isCurrentWeek = (weekId) => {
-  return todoStore.getCurrentWeek?.id === weekId
+  return todoStore.getCurrentWeekByDate?.id === weekId
 }
 
 onMounted(() => {
@@ -38,6 +38,7 @@ onMounted(() => {
         :to="`/week/${week.id}`"
         class="week-card"
         :class="{ 'week-card--current': isCurrentWeek(week.id) }"
+        @click="selectWeek(week.id)"
       >
         <div class="week-card-header">
           <div class="week-info">
@@ -52,14 +53,10 @@ onMounted(() => {
             <span class="stat-label text-secondary">Total Tasks</span>
             <span class="stat-value text-primary">{{ getTaskCounts(week.id) }}</span>
           </div>
-        </div>
-
-        <div class="week-card-footer">
           <span class="view-link text-primary">View Details</span>
         </div>
       </RouterLink>
     </div>
-
   </div>
 </template>
 
@@ -80,7 +77,6 @@ onMounted(() => {
 .weeks-header h1 {
   font-size: 32px;
   font-weight: 700;
-  margin-bottom: 8px;
 }
 
 .weeks-header p {
@@ -90,7 +86,7 @@ onMounted(() => {
 .weeks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  gap: 14px;
   width: 100%;
 }
 
@@ -104,7 +100,7 @@ onMounted(() => {
   background: var(--bg-card);
   border: 1px solid var(--color-border);
   border-radius: 16px;
-  padding: 20px;
+  padding: 10px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -116,12 +112,12 @@ onMounted(() => {
 }
 
 .week-card:hover {
-  background: var(--bg-hover);
+  border-color: var(--primary-color);
 }
 
 .week-card--current {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px var(--primary-color);
+  border-width: 2px;
 }
 
 .week-card-header {
@@ -154,13 +150,17 @@ onMounted(() => {
 }
 
 .week-date {
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 5px;
 }
 
 .week-card-stats {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 16px;
-  padding: 12px;
+  padding: 12px 12px 0px;
   background: var(--bg-main);
   border-radius: 12px;
 }
@@ -175,20 +175,12 @@ onMounted(() => {
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .stat-value {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
   margin-left: 15px;
-}
-
-.week-card-footer {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 8px;
-  border-top: 1px solid var(--color-border);
 }
 
 .view-link {
@@ -199,5 +191,4 @@ onMounted(() => {
 .view-link:hover {
   color: var(--primary-color);
 }
-
 </style>

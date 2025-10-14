@@ -134,9 +134,7 @@ onMounted(() => {
 .week-header {
   width: 100%;
   height: max-content;
-  margin: 0px auto;
-  padding: 16px;
-  border-radius: 24px;
+  margin: 0 auto;
 }
 
 .week-navigation {
@@ -157,10 +155,14 @@ onMounted(() => {
   font-weight: 500;
   transition: all 0.2s;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav-button:hover:not(:disabled) {
   background: var(--bg-hover);
+  border-color: var(--primary-color);
 }
 
 .nav-button:active:not(:disabled) {
@@ -178,25 +180,42 @@ onMounted(() => {
 }
 
 .week-title {
+  text-align: center;
   font-weight: 600;
-  margin-bottom: 4px;
-  font-size: 24px;
+  font-size: 18px;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
 }
 
 .week-date {
   font-weight: 500;
   font-size: 16px;
+  letter-spacing: 0.2px;
 }
 
 .week-stats {
   text-align: center;
   font-weight: 500;
   margin-top: 8px;
+  font-size: 16px;
 }
 
 @media (max-width: 768px) {
   .week-header {
+    padding: 16px;
     width: 100%;
+  }
+
+  .week-title {
+    font-size: 16px;
+  }
+
+  .week-date {
+    font-size: 14px;
+  }
+
+  .week-stats {
+    font-size: 14px;
   }
 
   .week-navigation {
@@ -247,19 +266,21 @@ onMounted(() => {
 @media (max-width: 767px) {
   .days-tasks {
     grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 }
 
 @media (max-width: 480px) {
   .days-tasks {
     grid-template-columns: repeat(1, 1fr);
+    gap: 12px;
   }
 }
 
 .day-card {
   width: 100%;
-  height: 240px;
-  padding: 12px 22px;
+  height: 200px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -267,19 +288,17 @@ onMounted(() => {
   border-radius: 16px;
   border: 1px solid var(--color-border);
   cursor: pointer;
-  transition: all 200ms;
+  transition: all 0.3s ease;
   text-decoration: none;
   color: inherit;
 }
 
 .day-card:hover {
-  background: var(--bg-hover);
+  box-shadow: 0 0 0 1px var(--primary-color);
 }
 
-@media (max-width: 767px) {
-  .day-card {
-    padding: 10px 16px;
-  }
+.day-card:active {
+  transform: translateY(0);
 }
 
 .main-day {
@@ -288,15 +307,20 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
 .day-head {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0;
+  letter-spacing: 0.3px;
 }
 
 .day-date {
-  font-weight: 400;
-  font-size: 18px;
+  font-size: 13px;
+  margin: 0;
+  font-weight: 500;
 }
 
 .day-type-of-tasks {
@@ -304,27 +328,61 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  gap: 4px;
+  margin-left: 5px;
 }
 
 .day-to-do-tasks,
 .day-doing-tasks,
-.day-done-tasks,
-.total-tasks {
+.day-done-tasks {
   font-weight: 500;
   margin-left: 5px;
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: 0.2px;
 }
 
 .total-tasks {
+  font-weight: 600;
   text-align: center;
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.2px;
 }
 
 .total-tasks span {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .number-of-tasks {
   color: var(--primary-color);
   margin-left: 6px;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .day-card {
+    padding: 10px 16px;
+    height: 200px;
+  }
+
+  .day-head {
+    font-size: 14px;
+  }
+
+  .day-to-do-tasks,
+  .day-doing-tasks,
+  .day-done-tasks {
+    font-size: 15px;
+  }
+
+  .total-tasks {
+    font-size: 16px;
+  }
+
+  .number-of-tasks {
+    font-size: 14px;
+  }
 }
 </style>

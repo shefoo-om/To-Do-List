@@ -393,7 +393,7 @@ function handleTaskSelected(task) {
 }
 
 .week-item:hover {
-  background-color: var(--bg-hover);
+  border: 1px solid var(--primary-color);
 }
 
 .week-item--current {
