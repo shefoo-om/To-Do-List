@@ -64,11 +64,15 @@ const handleNextWeek = () => {
 onMounted(() => {
   todoStore.initializeStore()
   todoStore.setCurrentWeekById(weekId.value)
+
+  if (!currentWeek.value) {
+    router.push({ name: 'not-found' })
+  }
 })
 </script>
 
 <template>
-  <div class="week-view">
+  <div v-if="currentWeek" class="week-view">
     <div class="week-header">
       <div class="week-navigation">
         <button

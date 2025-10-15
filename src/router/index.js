@@ -4,6 +4,7 @@ import WeekDetailView from '@/views/WeekDetailView.vue'
 import AllWeeksView from '@/views/AllWeeksView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import Settings from '@/views/SettingsView.vue'
+import PageNotFoundView from '@/views/PageNotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,7 +37,11 @@ const router = createRouter({
       component: Settings,
       props: true
     },
-  ],
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: PageNotFoundView
+    }],
 })
 
 export default router

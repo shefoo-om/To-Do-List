@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
 import AddTaskCard from '@/components/day/AddTaskCard.vue'
 import TodoColumn from '@/components/day/TodoColumn.vue'
@@ -8,6 +8,7 @@ import DoingColumn from '@/components/day/DoingColumn.vue'
 import DoneColumn from '@/components/day/DoneColumn.vue'
 
 const route = useRoute()
+const router = useRouter()
 const todoStore = useTodoStore()
 
 const dayId = computed(() => parseInt(route.params.dayId) || 1)
@@ -16,7 +17,21 @@ const currentDay = computed(() => {
   return todoStore.days.find((day) => day.id === dayId.value) || null
 })
 
+onMounted(() => {
+  todoStore.initializeStore()
+
+  if (!currentDay.value) {
+    router.push({ name: 'not-found' })
+    return
+  }
+
+  updateTime()
+  setInterval(updateTime, 1000)
+})
+
 const dayTasks = computed(() => {
+  if (!currentDay.value) return { todo: [], doing: [], done: [] }
+
   const allTasks = todoStore.tasks.filter((task) => task.dayId === dayId.value)
 
   return {
@@ -24,12 +39,6 @@ const dayTasks = computed(() => {
     doing: allTasks.filter((task) => task.status === 'doing'),
     done: allTasks.filter((task) => task.status === 'done'),
   }
-})
-
-onMounted(() => {
-  todoStore.initializeStore()
-  updateTime()
-  setInterval(updateTime, 1000)
 })
 
 const currentTime = ref('')
@@ -74,7 +83,7 @@ const handleEditTask = (taskId, updates) => {
 </script>
 
 <template>
-  <div class="day-view">
+  <div v-if="currentDay" class="day-view">
     <div class="day-header">
       <div class="header-left">
         <h1 class="day-name">{{ currentDay.name }}</h1>
@@ -214,7 +223,9 @@ const handleEditTask = (taskId, updates) => {
   line-height: 1;
 }
 
-.todo-color,.doing-color,.done-color {
+.todo-color,
+.doing-color,
+.done-color {
   color: var(--primary-color);
 }
 
