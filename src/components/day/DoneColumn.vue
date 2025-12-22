@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import TaskCard from './TaskCard.vue'
+import { Trophy } from 'lucide-vue-next'
 
 const props = defineProps({
   tasks: {
@@ -41,7 +42,9 @@ const isEmpty = computed(() => props.tasks.length === 0)
 
     <div class="tasks-list" :class="{ empty: isEmpty }">
       <div v-if="isEmpty" class="empty-state">
-        <div class="empty-icon">🎉</div>
+        <div class="empty-icon">
+          <Trophy :size="40" />
+        </div>
         <p class="empty-text">No completed tasks</p>
         <p class="empty-hint">Complete tasks to see them here!</p>
       </div>
@@ -111,6 +114,9 @@ const isEmpty = computed(() => props.tasks.length === 0)
   gap: 10px;
 }
 .empty-icon {
+  font-size: 40px;
+}
+.icon-size {
   font-size: 40px;
 }
 .task-enter-active {

@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import TaskCard from './TaskCard.vue'
+import { ClipboardList } from 'lucide-vue-next'
 
 const props = defineProps({
   tasks: {
@@ -41,7 +42,9 @@ const isEmpty = computed(() => props.tasks.length === 0)
 
     <div class="tasks-list" :class="{ empty: isEmpty }">
       <div v-if="isEmpty" class="empty-state">
-        <div class="empty-icon">📋</div>
+        <div class="empty-icon">
+          <ClipboardList :size="40" />
+        </div>
         <p class="empty-text text-primary">No tasks to do</p>
         <p class="empty-hint text-secondary">Add a new task to get started!</p>
       </div>

@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import TaskCard from './TaskCard.vue'
+import { Zap } from 'lucide-vue-next'
 
 const props = defineProps({
   tasks: {
@@ -41,7 +42,7 @@ const isEmpty = computed(() => props.tasks.length === 0)
 
     <div class="tasks-list" :class="{ empty: isEmpty }">
       <div v-if="isEmpty" class="empty-state">
-        <div class="empty-icon">⚡</div>
+        <div class="empty-icon"><Zap :size="40"/></div>
         <p class="empty-text text-primary">No active tasks</p>
         <p class="empty-hint text-secondary">Move tasks here when you start working!</p>
       </div>
