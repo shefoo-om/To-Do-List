@@ -8,6 +8,20 @@ import {
   Rocket,
   Heart,
   DollarSign,
+  Coffee,
+  Book,
+  Music,
+  Plane,
+  ShoppingCart,
+  Home,
+  Car,
+  Laptop,
+  Camera,
+  Pizza,
+  Gift,
+  Star,
+  Zap,
+  Target,
   X,
   ChevronDown,
 } from 'lucide-vue-next'
@@ -15,14 +29,57 @@ import {
 const emit = defineEmits(['add-task'])
 const toast = useToast()
 
-const categories = [
-  { value: 'work', label: 'Work', icon: Briefcase },
-  { value: 'personal', label: 'Personal', icon: Sparkles },
-  { value: 'health', label: 'Health & Fitness', icon: Dumbbell },
-  { value: 'learning', label: 'Learning', icon: Rocket },
-  { value: 'social', label: 'Social & Family', icon: Heart },
-  { value: 'finance', label: 'Finance', icon: DollarSign },
+const iconComponents = {
+  Briefcase,
+  Sparkles,
+  Dumbbell,
+  Rocket,
+  Heart,
+  DollarSign,
+  Coffee,
+  Book,
+  Music,
+  Plane,
+  ShoppingCart,
+  Home,
+  Car,
+  Laptop,
+  Camera,
+  Pizza,
+  Gift,
+  Star,
+  Zap,
+  Target,
+}
+
+const defaultCategories = [
+  { value: 'work', label: 'Work', icon: 'Briefcase' },
+  { value: 'personal', label: 'Personal', icon: 'Sparkles' },
+  { value: 'health', label: 'Health & Fitness', icon: 'Dumbbell' },
+  { value: 'learning', label: 'Learning', icon: 'Rocket' },
+  { value: 'social', label: 'Social & Family', icon: 'Heart' },
+  { value: 'finance', label: 'Finance', icon: 'DollarSign' },
 ]
+
+const categories = ref([])
+
+const loadCategories = () => {
+  const stored = localStorage.getItem('customCategories')
+  if (stored) {
+    try {
+      categories.value = JSON.parse(stored)
+    // eslint-disable-next-line no-unused-vars
+    } catch (e) {
+      categories.value = [...defaultCategories]
+    }
+  } else {
+    categories.value = [...defaultCategories]
+  }
+}
+
+const getIconComponent = (iconName) => {
+  return iconComponents[iconName] || Star
+}
 
 const selected = ref(null)
 const taskName = ref('')
@@ -34,8 +91,8 @@ const highlightedIndex = ref(-1)
 const taskInputRef = ref(null)
 
 const filteredCategories = computed(() => {
-  if (!searchTerm.value) return categories
-  return categories.filter((category) =>
+  if (!searchTerm.value) return categories.value
+  return categories.value.filter((category) =>
     category.label.toLowerCase().includes(searchTerm.value.toLowerCase()),
   )
 })
@@ -45,7 +102,7 @@ const toggleDropdown = () => {
   if (isOpen.value) {
     searchTerm.value = ''
     highlightedIndex.value = selected.value
-      ? categories.findIndex((c) => c.value === selected.value.value)
+      ? categories.value.findIndex((c) => c.value === selected.value.value)
       : 0
   }
 }
@@ -174,11 +231,19 @@ const handleSubmit = () => {
 }
 
 onMounted(() => {
+  loadCategories()
   document.addEventListener('click', handleClickOutside)
   document.addEventListener('keydown', handleGlobalKeydown)
   setTimeout(() => {
     taskInputRef.value?.focus()
   }, 100)
+
+  // Listen for category updates
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'customCategories') {
+      loadCategories()
+    }
+  })
 })
 
 onUnmounted(() => {
@@ -218,7 +283,7 @@ onUnmounted(() => {
         >
           <div class="select-content">
             <span v-if="selected" class="selected-option">
-              <component :is="selected.icon" :size="16" :stroke-width="2" />
+              <component :is="getIconComponent(selected.icon)" :size="16" :stroke-width="2" />
               {{ selected.label }}
             </span>
             <span v-else class="placeholder"> Select category </span>
@@ -259,7 +324,7 @@ onUnmounted(() => {
               :aria-selected="selected?.value === category.value"
             >
               <span class="option-content">
-                <component :is="category.icon" :size="16" :stroke-width="2" />
+                <component :is="getIconComponent(category.icon)" :size="16" :stroke-width="2" />
                 {{ category.label }}
               </span>
               <span v-if="selected?.value === category.value" class="check-mark"> ✓ </span>

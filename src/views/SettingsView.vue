@@ -2,6 +2,8 @@
 import { ref, onMounted } from 'vue'
 import { useThemeStore } from '@/stores/theme.js'
 import { CloudMoonRain } from 'lucide-vue-next'
+import CategoryManager from '@/components/ui/CategoryManager.vue'
+// import CategoryManager from '@/components/settings/CategoryManager.vue'
 
 const themeStore = useThemeStore()
 
@@ -147,6 +149,9 @@ function resetColors() {
               <span>↺</span> Reset Colors
             </button>
           </div>
+        </div>
+        <div class="settings-card bg-card">
+          <CategoryManager @update-categories="handleCategoryUpdate" />
         </div>
       </div>
     </div>

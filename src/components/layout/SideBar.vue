@@ -89,6 +89,10 @@ onUnmounted(() => {
 function handleTaskSelected(task) {
   console.log('Selected task from store:', task)
 }
+
+const getWeekDisplayName = (week) => {
+  return todoStore.getWeekDisplayName(week)
+}
 </script>
 
 <template>
@@ -130,7 +134,7 @@ function handleTaskSelected(task) {
         >
           <div class="week-item-content">
             <div class="week-header-row">
-              <span class="week-name">{{ week.name }}</span>
+              <span class="week-name">{{ getWeekDisplayName(week) }}</span>
               <span v-if="isCurrentWeek(week.id)" class="current-indicator">●</span>
             </div>
             <span class="week-range text-secondary">{{ week.dateRange }}</span>
@@ -417,6 +421,11 @@ function handleTaskSelected(task) {
 .week-name {
   font-weight: 600;
   font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  margin-right: 8px;
 }
 
 .current-indicator {

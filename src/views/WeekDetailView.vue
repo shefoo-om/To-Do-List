@@ -5,6 +5,8 @@ import { RouterLink } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
 import { ArrowBigLeftDash, ArrowBigRightDash } from 'lucide-vue-next'
 import { useToast } from 'vue-toastification'
+import WeekNameEditor from '@/components/ui/WeekNameEditor.vue'
+WeekNameEditor
 
 const route = useRoute()
 const router = useRouter()
@@ -69,6 +71,10 @@ onMounted(() => {
     router.push({ name: 'not-found' })
   }
 })
+
+const handleWeekNameUpdate = ({ weekId, newName }) => {
+  todoStore.updateWeekName(weekId, newName)
+}
 </script>
 
 <template>
@@ -87,8 +93,13 @@ onMounted(() => {
 
         <div class="week-info">
           <h2 class="week-title text-primary">
-            {{ currentWeek?.name || 'Loading...' }}
+            {{ todoStore.getWeekDisplayName(currentWeek) }}
           </h2>
+          <WeekNameEditor
+            :week-id="currentWeek.id"
+            :current-name="todoStore.getWeekDisplayName(currentWeek)"
+            @update-name="handleWeekNameUpdate"
+          />
           <p class="week-date text-secondary">{{ currentWeek?.dateRange || '' }}</p>
         </div>
 

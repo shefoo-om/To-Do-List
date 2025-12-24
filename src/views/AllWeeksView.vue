@@ -22,6 +22,10 @@ const isCurrentWeek = (weekId) => {
 onMounted(() => {
   todoStore.initializeStore()
 })
+
+const getWeekDisplayName = (week) => {
+  return todoStore.getWeekDisplayName(week)
+}
 </script>
 
 <template>
@@ -42,7 +46,7 @@ onMounted(() => {
       >
         <div class="week-card-header">
           <div class="week-info">
-            <h2 class="week-name text-primary">{{ week.name }}</h2>
+            <h2 class="week-name text-primary">{{ getWeekDisplayName(week) }}</h2>
             <span v-if="isCurrentWeek(week.id)" class="current-badge">Current Week</span>
           </div>
           <p class="week-date text-secondary">{{ week.dateRange }}</p>

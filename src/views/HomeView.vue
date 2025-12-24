@@ -2,6 +2,7 @@
 import { onMounted, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useTodoStore } from '@/stores/todoStore.js'
+import WeekNameEditor from '@/components/ui/WeekNameEditor.vue'
 
 const todoStore = useTodoStore()
 
@@ -23,6 +24,10 @@ const currentDayTaskCounts = computed(() => {
 onMounted(() => {
   todoStore.initializeStore()
 })
+
+const handleWeekNameUpdate = ({ weekId, newName }) => {
+  todoStore.updateWeekName(weekId, newName)
+}
 </script>
 
 <template>
@@ -32,6 +37,12 @@ onMounted(() => {
         Week Of
         <span class="text-secondary week-date">{{ currentWeek?.dateRange || 'Loading...' }}</span>
       </h2>
+      <WeekNameEditor
+        v-if="currentWeek"
+        :week-id="currentWeek.id"
+        :current-name="todoStore.getWeekDisplayName(currentWeek)"
+        @update-name="handleWeekNameUpdate"
+      />
       <p class="week-name text-secondary">{{ currentWeek?.name ? `"${currentWeek.name}"` : '' }}</p>
       <p class="week-stats text-primary">{{ weekTaskCount }} total tasks this week</p>
     </div>
@@ -593,5 +604,4 @@ onMounted(() => {
     font-size: 14px;
   }
 }
-
 </style>

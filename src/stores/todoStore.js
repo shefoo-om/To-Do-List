@@ -24,6 +24,7 @@ export const useTodoStore = defineStore('todoStore', () => {
   const getISODate = (date) => {
     return new Date(date).toISOString().split('T')[0]
   }
+
   const getCurrentDay = computed(() => {
     const today = new Date()
     const todayISO = getISODate(today)
@@ -32,6 +33,7 @@ export const useTodoStore = defineStore('todoStore', () => {
     const _ = tasks.value.length
     return days.value.find(day => day.fullDate === todayISO) || null
   })
+
   const generateWeekData = (weekId, weekNumber, startDate) => {
     const weekDays = []
     const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
@@ -55,6 +57,7 @@ export const useTodoStore = defineStore('todoStore', () => {
     const week = {
       id: weekId,
       name: `Week ${weekNumber}`,
+      customName: null, // New field for custom week names
       weekNumber: weekNumber,
       startDate: getISODate(startDate),
       endDate: getISODate(endOfWeek),
@@ -148,7 +151,6 @@ export const useTodoStore = defineStore('todoStore', () => {
     const today = new Date()
     const todayISO = getISODate(today)
 
-    // ابحث عن الأسبوع اللي تاريخ اليوم واقع بينه
     return weeks.value.find(week => {
       return todayISO >= week.startDate && todayISO <= week.endDate
     }) || weeks.value[0] || null
@@ -170,12 +172,28 @@ export const useTodoStore = defineStore('todoStore', () => {
 
     return weekTasks.length
   })
+
   const setCurrentWeekById = (weekId) => {
     const index = weeks.value.findIndex(w => w.id === weekId)
     if (index !== -1) {
       currentWeekIndex.value = index
       saveToLocalStorage()
     }
+  }
+
+  // New function to update week name
+  const updateWeekName = (weekId, newName) => {
+    const week = weeks.value.find(w => w.id === weekId)
+    if (week) {
+      week.customName = newName
+      saveToLocalStorage()
+      return true
+    }
+    return false
+  }
+
+  const getWeekDisplayName = (week) => {
+    return week.customName || week.name
   }
 
   const loadFromLocalStorage = () => {
@@ -197,7 +215,6 @@ export const useTodoStore = defineStore('todoStore', () => {
     }
   }
 
-  // Save data to localStorage
   const saveToLocalStorage = () => {
     try {
       localStorage.setItem('todoTasks', JSON.stringify(tasks.value))
@@ -209,7 +226,6 @@ export const useTodoStore = defineStore('todoStore', () => {
     }
   }
 
-  // Initialize store
   const initializeStore = () => {
     const hasStoredData = loadFromLocalStorage()
 
@@ -388,7 +404,7 @@ export const useTodoStore = defineStore('todoStore', () => {
     getCurrentWeekDaysByDate,
     getWeekTaskCountByDate,
     getCurrentDay,
-
+    getWeekDisplayName,
 
     initializeStore,
     goToPreviousWeek,
@@ -398,6 +414,7 @@ export const useTodoStore = defineStore('todoStore', () => {
     getTaskWithDay,
     addTask,
     updateTask,
+    updateWeekName,
     deleteTask,
     getTaskHistory,
     clearAllData,
